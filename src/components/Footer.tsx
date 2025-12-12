@@ -4,7 +4,9 @@ const Footer = () => {
     const currentYear = new Date().getFullYear();
 
     return (
-        <footer className="bg-vertex-black text-white pt-20 pb-10 border-t border-white/10">
+        <footer
+            id="footer"
+            className="bg-vertex-black text-white pt-20 pb-10 border-t border-white/10">
             <div className="container mx-auto px-6 lg:px-12">
                 {/* --- TOP SECTION: Brand & Newsletter --- */}
                 <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-16">

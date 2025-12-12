@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Star, CheckCircle, Quote } from "lucide-react";
+import { Link } from "react-router-dom";
 import spaBath from "@/assets/spa-bath.jpg";
 import restaurantBar from "@/assets/restaurant-bar.jpg";
 
@@ -98,6 +99,7 @@ const FeatureSections = () => {
 
     return (
         <section
+            id="wellness"
             ref={sectionRef}
             className="py-24 lg:py-40 bg-vertex-black text-white overflow-hidden">
             <div className="container mx-auto px-6 lg:px-12 space-y-32 lg:space-y-40">
@@ -122,11 +124,11 @@ const FeatureSections = () => {
 
                         {/* Floating Review Card */}
                         <ReviewCard
-                            name="Elena S."
-                            date="Stayed Oct 2024"
+                            name="Hannah S."
+                            date="Stayed Oct 2025"
                             rating={5}
                             comment="The spa services are world-class. I've never felt more rejuvenated."
-                            avatar="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
+                            avatar="https://images.unsplash.com/photo-1545912453-865b693e5561?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDN8fHxlbnwwfHx8fHw%3D"
                             position="left"
                         />
                     </div>
@@ -159,9 +161,11 @@ const FeatureSections = () => {
                             technology.
                         </p>
 
-                        <button className="text-xs font-bold tracking-widest uppercase border-b border-white/30 pb-2 hover:text-vertex-gold hover:border-vertex-gold transition-all duration-300">
-                            Explore Treatments
-                        </button>
+                        <Link to="/wellness">
+                            <button className="text-xs font-bold tracking-widest uppercase border-b border-white/30 pb-2 hover:text-vertex-gold hover:border-vertex-gold transition-all duration-300">
+                                Explore Treatments
+                            </button>
+                        </Link>
                     </div>
                 </div>
 
@@ -184,11 +188,11 @@ const FeatureSections = () => {
                         </div>
 
                         <ReviewCard
-                            name="Alexander M."
-                            date="Dined Nov 2024"
+                            name="Percy W."
+                            date="Dined Nov 2025"
                             rating={5}
                             comment="The cocktail menu is an absolute masterpiece. The atmosphere is electric."
-                            avatar="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face"
+                            avatar="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                             position="right"
                         />
                     </div>
@@ -221,9 +225,11 @@ const FeatureSections = () => {
                             social destination.
                         </p>
 
-                        <button className="text-xs font-bold tracking-widest uppercase border-b border-white/30 pb-2 hover:text-vertex-gold hover:border-vertex-gold transition-all duration-300">
-                            View Cocktail Menu
-                        </button>
+                        <Link to="/dining-menu">
+                            <button className="text-xs font-bold tracking-widest uppercase border-b border-white/30 pb-2 hover:text-vertex-gold hover:border-vertex-gold transition-all duration-300">
+                                View Cocktail Menu
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </div>

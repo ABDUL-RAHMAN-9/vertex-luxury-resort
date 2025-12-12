@@ -40,8 +40,8 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
     const navLinks = [
         { name: "The Hotel", href: "#hotel" },
         { name: "Dining", href: "#dining" },
-        { name: "Wellness", href: "#" }, // Placeholder for future
-        { name: "Events", href: "#" }, // Placeholder for future
+        { name: "Wellness", href: "#wellness" },
+        { name: "Contact", href: "#footer" }, 
     ];
 
     return (
