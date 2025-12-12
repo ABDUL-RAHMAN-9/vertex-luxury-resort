@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     ArrowLeft,
     Clock,
@@ -8,7 +8,7 @@ import {
     Quote,
     ChevronDown,
 } from "lucide-react";
-
+import { set } from "date-fns";
 // --- Helper: Scroll To Top ---
 const ScrollToTop = () => {
     useEffect(() => {
@@ -18,6 +18,18 @@ const ScrollToTop = () => {
 };
 
 const OurStory = () => {
+    const navigate = useNavigate();
+
+    const handleStartJourney = () => {
+        navigate("/"); // go to home page and then smoothly scroll to footer
+        setTimeout(() => {
+            const footer = document.getElementById("footer");
+            if (footer) {
+                footer.scrollIntoView({ behavior: "smooth" });
+            }
+        }, 100);
+    };
+
     const [visibleSections, setVisibleSections] = useState<Set<string>>(
         new Set()
     );
@@ -269,11 +281,12 @@ const OurStory = () => {
                         The next chapter is yours to write. Experience the
                         Vertex legacy firsthand.
                     </p>
-                    <Link to="/">
-                        <button className="px-12 py-5 border border-vertex-gold text-vertex-gold font-display text-sm tracking-widest hover:bg-vertex-gold hover:text-black transition-all duration-300 uppercase">
-                            Start Your Journey
-                        </button>
-                    </Link>
+
+                    <button
+                        onClick={handleStartJourney}
+                        className="px-12 py-5 border border-vertex-gold text-vertex-gold font-display text-sm tracking-widest hover:bg-vertex-gold hover:text-black transition-all duration-300 uppercase">
+                        Start Your Journey
+                    </button>
                 </div>
             </section>
         </div>
