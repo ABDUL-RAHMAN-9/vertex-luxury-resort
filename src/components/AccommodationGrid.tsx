@@ -1,3 +1,4 @@
+import { ArrowUpRight, Maximize, Users, Wifi, Wind } from "lucide-react";
 import bedroom from "@/assets/bedroom.jpg";
 import amenities from "@/assets/amenities.jpg";
 import bathroomMirror from "@/assets/bathroom-mirror.jpg";
@@ -7,72 +8,150 @@ interface AccommodationGridProps {
     onBookRoom: () => void;
 }
 
+// Data Structure for the Rooms (Simulating a database)
+const rooms = [
+    {
+        id: 1,
+        name: "Presidential Suite",
+        image: bedroom,
+        price: "$1,200",
+        size: "120m²",
+        guests: "2-4 Guests",
+        gridClass: "md:col-span-1 md:row-span-2 h-[500px] md:h-full", // Tall Card
+    },
+    {
+        id: 2,
+        name: "Ocean Deluxe",
+        image: amenities,
+        price: "$850",
+        size: "85m²",
+        guests: "2 Guests",
+        gridClass: "md:col-span-1 md:row-span-2 h-[500px] md:h-full", // Tall Card
+    },
+    {
+        id: 3,
+        name: "Spa Sanctuary",
+        image: bathroomMirror,
+        price: "$600",
+        size: "60m²",
+        guests: "2 Guests",
+        gridClass: "md:col-span-1 md:row-span-1 h-[300px]", // Short Card
+    },
+    {
+        id: 4,
+        name: "Skyline Bath",
+        image: bathtubView,
+        price: "$550",
+        size: "55m²",
+        guests: "2 Guests",
+        gridClass: "md:col-span-1 md:row-span-1 h-[300px]", // Short Card
+    },
+];
+
 const AccommodationGrid = ({ onBookRoom }: AccommodationGridProps) => {
     return (
-        <section id="hotel" className="py-24 lg:py-32 bg-primary">
+        <section
+            id="hotel"
+            className="py-24 lg:py-32 bg-vertex-black text-white relative overflow-hidden">
             <div className="container mx-auto px-6 lg:px-12">
-                {/* Header */}
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-8 mb-12">
-                    <div className="flex flex-col lg:flex-row items-start lg:items-end gap-6">
-                        <h2 className="font-display text-5xl md:text-6xl lg:text-7xl tracking-tight text-primary-foreground">
-                            HOTEL
+                {/* --- HEADER --- */}
+                <div className="flex flex-col lg:flex-row justify-between items-end gap-12 mb-16 relative z-10">
+                    <div className="relative">
+                        {/* Background Number */}
+                        <span className="absolute -top-20 -left-10 text-[10rem] font-display font-bold text-white/5 opacity-50 select-none -z-10">
+                            03
+                        </span>
+
+                        <div className="flex items-center gap-3 mb-4">
+                            <span className="h-[1px] w-12 bg-vertex-gold" />
+                            <span className="text-xs font-bold tracking-[0.2em] uppercase text-vertex-gold">
+                                Accommodations
+                            </span>
+                        </div>
+
+                        <h2 className="font-display text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[0.9]">
+                            REST & <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-vertex-gold to-yellow-600">
+                                REJUVENATION
+                            </span>
                         </h2>
-                        <p className="text-muted-foreground text-sm uppercase tracking-wide max-w-md">
-                            Book your stay with us now and experience the
-                            epitome of comfort and luxury at our hotel. We
-                            guarantee you'll be thrilled with your decision.
-                        </p>
                     </div>
 
-                    <div className="flex gap-4">
-                        <button
-                            onClick={onBookRoom}
-                            className="px-6 py-3 border border-primary-foreground text-primary-foreground font-display text-sm tracking-widest hover:bg-primary-foreground hover:text-primary transition-all duration-300">
-                            BOOK A ROOM
-                        </button>
-                        <button className="px-6 py-3 border border-primary-foreground text-primary-foreground font-display text-sm tracking-widest hover:bg-primary-foreground hover:text-primary transition-all duration-300">
-                            VIEW ROOMS
-                        </button>
+                    <div className="max-w-md text-white/60 font-light leading-relaxed border-l border-white/10 pl-6">
+                        <p>
+                            Each room is an architectural masterpiece, designed
+                            to blur the lines between indoor luxury and the
+                            outdoor horizon. Experience the epitome of comfort
+                            with our award-winning sleep systems.
+                        </p>
                     </div>
                 </div>
 
-                {/* Bento Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Large - Master Bedroom (spans 2 rows on md+) */}
-                    <div className="md:row-span-2">
-                        <img
-                            src={amenities}
-                            alt="Premium Amenities"
-                            className="w-full h-64 md:h-full object-cover"
-                        />
-                    </div>
+                {/* --- BENTO GRID --- */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+                    {rooms.map((room) => (
+                        <div
+                            key={room.id}
+                            className={`group relative overflow-hidden rounded-sm cursor-pointer ${room.gridClass}`}
+                            onClick={onBookRoom}>
+                            {/* Image with Zoom Effect */}
+                            <div className="absolute inset-0 bg-gray-900">
+                                <img
+                                    src={room.image}
+                                    alt={room.name}
+                                    className="w-full h-full object-cover opacity-80 transition-transform duration-[2000ms] ease-out group-hover:scale-110 group-hover:opacity-100"
+                                />
+                            </div>
 
-                    {/* Center - Large Bedroom */}
-                    <div className="md:row-span-2">
-                        <img
-                            src={bedroom}
-                            alt="Master Bedroom"
-                            className="w-full h-64 md:h-full object-cover"
-                        />
-                    </div>
+                            {/* Hover Overlay Gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-500" />
 
-                    {/* Top Right - Bathroom */}
-                    <div>
-                        <img
-                            src={bathroomMirror}
-                            alt="Modern Bathroom"
-                            className="w-full h-64 object-cover"
-                        />
-                    </div>
+                            {/* Content Content */}
+                            <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end">
+                                {/* Top Right Icon (Appears on Hover) */}
+                                <div className="absolute top-6 right-6 translate-x-10 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-500 bg-white text-black p-3 rounded-full">
+                                    <ArrowUpRight className="w-5 h-5" />
+                                </div>
 
-                    {/* Bottom Right - Bathtub */}
-                    <div>
-                        <img
-                            src={bathtubView}
-                            alt="Bathtub with View"
-                            className="w-full h-64 object-cover"
-                        />
-                    </div>
+                                {/* Room Info */}
+                                <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                    <p className="text-vertex-gold text-xs font-bold tracking-widest uppercase mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                                        Starting from {room.price}/night
+                                    </p>
+
+                                    <h3 className="font-display text-3xl md:text-4xl mb-3 text-white group-hover:text-white/90 transition-colors">
+                                        {room.name}
+                                    </h3>
+
+                                    {/* Amenities Row (Slides up) */}
+                                    <div className="flex items-center gap-6 mt-4 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200 border-t border-white/20 pt-4">
+                                        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-white/80">
+                                            <Maximize className="w-4 h-4 text-vertex-gold" />
+                                            {room.size}
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-white/80">
+                                            <Users className="w-4 h-4 text-vertex-gold" />
+                                            {room.guests}
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-white/80">
+                                            <Wifi className="w-4 h-4 text-vertex-gold" />
+                                            Free Wifi
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {/* --- FOOTER CTA --- */}
+                <div className="flex justify-center mt-16">
+                    <button
+                        onClick={onBookRoom}
+                        className="group flex items-center gap-2 text-sm font-bold tracking-[0.2em] uppercase text-vertex-gold hover:text-white transition-colors duration-300">
+                        View All Accommodations
+                        <span className="block h-[1px] w-12 bg-vertex-gold group-hover:w-20 transition-all duration-300" />
+                    </button>
                 </div>
             </div>
         </section>
