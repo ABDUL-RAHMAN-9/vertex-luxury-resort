@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import tailwindcssAnimate from "tailwindcss-animate"; // 1. Import added here
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
     darkMode: ["class"],
@@ -83,6 +83,7 @@ export default {
                 md: "calc(var(--radius) - 2px)",
                 sm: "calc(var(--radius) - 4px)",
             },
+            // --- FIXED: All Keyframes are now inside this one object ---
             keyframes: {
                 "accordion-down": {
                     from: { height: "0" },
@@ -100,18 +101,31 @@ export default {
                     "0%": { opacity: "0" },
                     "100%": { opacity: "1" },
                 },
+                // Added correctly here:
+                "ken-burns": {
+                    "0%": { transform: "scale(1.1)" },
+                    "100%": { transform: "scale(1)" },
+                },
+                "slide-up": {
+                    "0%": { transform: "translateY(100%)", opacity: "0" },
+                    "100%": { transform: "translateY(0)", opacity: "1" },
+                },
             },
+            // --- FIXED: All Animations are now inside this one object ---
             animation: {
                 "accordion-down": "accordion-down 0.2s ease-out",
                 "accordion-up": "accordion-up 0.2s ease-out",
                 "fade-up": "fade-up 0.8s ease-out forwards",
                 "fade-in": "fade-in 0.6s ease-out forwards",
+                // Added correctly here:
+                "ken-burns": "ken-burns 1.5s ease-out forwards",
+                "slide-up-fade":
+                    "slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards",
             },
             letterSpacing: {
                 "widest-xl": "0.25em",
             },
         },
     },
-    // 2. Changed from require(...) to the variable name
     plugins: [tailwindcssAnimate],
 } satisfies Config;

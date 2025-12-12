@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import heroBuilding from "@/assets/hero-building.jpg";
 
 interface HeroSectionProps {
@@ -6,68 +8,105 @@ interface HeroSectionProps {
 }
 
 const HeroSection = ({ onBookRoom, onBookTable }: HeroSectionProps) => {
+    const [loaded, setLoaded] = useState(false);
+
+    useEffect(() => {
+        setLoaded(true);
+    }, []);
+
     return (
-        <section id="home" className="min-h-screen flex flex-col lg:flex-row">
-            {/* Left Side - Black with VERTEX */}
-            <div className="lg:w-1/2 bg-primary flex flex-col justify-center items-center lg:items-start px-8 lg:px-16 py-24 lg:py-0 min-h-[60vh] lg:min-h-screen relative">
-                <div className="max-w-lg">
-                    <h1 className="font-display text-primary-foreground text-7xl md:text-8xl lg:text-[10rem] font-bold tracking-tight leading-none animate-fade-up">
+        <section
+            id="home"
+            className="relative w-full h-screen flex flex-col lg:flex-row overflow-hidden bg-vertex-black">
+            {/* --- LEFT SIDE: Content --- */}
+            <div className="lg:w-[55%] flex flex-col justify-center px-6 md:px-12 lg:px-24 py-20 relative z-20 bg-primary text-primary-foreground">
+                {/* Animated Decor Line */}
+                <div
+                    className={`w-20 h-[1px] bg-vertex-gold mb-8 transition-all duration-1000 delay-300 ${
+                        loaded ? "w-20 opacity-100" : "w-0 opacity-0"
+                    }`}
+                />
+
+                {/* Main Title */}
+                <div className="overflow-hidden">
+                    <h1
+                        className={`font-display text-[5rem] md:text-[7rem] lg:text-[9rem] leading-[0.9] font-bold tracking-normal transition-transform duration-1000 ease-out ${
+                            loaded ? "translate-y-0" : "translate-y-[110%]"
+                        }`}>
                         VERTEX
                     </h1>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 md:mt-16">
-                        <p
-                            className="text-muted-foreground text-sm leading-relaxed uppercase tracking-wide animate-fade-up"
-                            style={{ animationDelay: "200ms" }}>
-                            Whether you're in the mood for a hearty breakfast, a
-                            light lunch, or a romantic dinner, our menu has
-                            something for everyone.
-                        </p>
-                        <p
-                            className="text-muted-foreground text-sm leading-relaxed uppercase tracking-wide animate-fade-up"
-                            style={{ animationDelay: "400ms" }}>
-                            At Hotel Vertex, we believe that great food should
-                            be available to everyone, no matter the time of day.
-                        </p>
-                    </div>
                 </div>
 
-                {/* Floating Buttons - Mobile */}
-                <div className="flex flex-col sm:flex-row gap-4 mt-12 lg:hidden">
+                <div className="overflow-hidden mb-12">
+                    <h2
+                        className={`font-serif italic text-2xl md:text-3xl text-vertex-gray mt-2 transition-transform duration-1000 delay-100 ease-out ${
+                            loaded ? "translate-y-0" : "translate-y-[110%]"
+                        }`}>
+                        The Pinnacle of Luxury
+                    </h2>
+                </div>
+
+                {/* Text Content Grid */}
+                <div
+                    className={`grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl transition-all duration-1000 delay-300 ${
+                        loaded
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-10"
+                    }`}>
+                    <p className="text-vertex-offwhite/80 text-sm md:text-base leading-relaxed font-light tracking-wide border-l border-white/10 pl-4">
+                        Experience an atmosphere where architectural brilliance
+                        meets unparalleled service. Every detail is curated for
+                        the discerning traveler.
+                    </p>
+                    <p className="text-vertex-offwhite/80 text-sm md:text-base leading-relaxed font-light tracking-wide border-l border-white/10 pl-4">
+                        From award-winning culinary arts to suites that redefine
+                        comfort, VERTEX offers an escape into a world of refined
+                        elegance.
+                    </p>
+                </div>
+
+                {/* CTA Buttons */}
+                <div
+                    className={`flex flex-col sm:flex-row gap-5 mt-16 transition-all duration-1000 delay-500 ${
+                        loaded
+                            ? "opacity-100 translate-y-0"
+                            : "opacity-0 translate-y-10"
+                    }`}>
                     <button
                         onClick={onBookRoom}
-                        className="px-8 py-3 border border-primary-foreground text-primary-foreground font-display text-sm tracking-widest hover:bg-primary-foreground hover:text-primary transition-all duration-300">
-                        BOOK A SUITE
+                        className="group relative px-8 py-4 bg-white text-black font-display font-medium tracking-widest text-sm overflow-hidden hover:text-white transition-colors duration-300">
+                        <span className="absolute inset-0 bg-vertex-black translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></span>
+                        <span className="relative flex items-center gap-2">
+                            BOOK A SUITE <ArrowRight className="w-4 h-4" />
+                        </span>
                     </button>
+
                     <button
                         onClick={onBookTable}
-                        className="px-8 py-3 border border-primary-foreground text-primary-foreground font-display text-sm tracking-widest hover:bg-primary-foreground hover:text-primary transition-all duration-300">
-                        RESERVE TABLE
+                        className="group relative px-8 py-4 border border-white/30 text-white font-display font-medium tracking-widest text-sm overflow-hidden hover:border-white transition-colors duration-300">
+                        <span className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></span>
+                        <span className="relative flex items-center gap-2 group-hover:text-black transition-colors duration-300">
+                            RESERVE TABLE
+                        </span>
                     </button>
+                </div>
+
+                {/* Scroll Indicator */}
+                <div className="absolute bottom-10 left-6 md:left-24 animate-bounce duration-[2000ms] text-white/50 hidden md:flex items-center gap-2 text-xs tracking-widest uppercase">
+                    <ChevronDown className="w-4 h-4" /> Scroll to explore
                 </div>
             </div>
 
-            {/* Right Side - Image */}
-            <div className="lg:w-1/2 relative min-h-[40vh] lg:min-h-screen">
+            {/* --- RIGHT SIDE: Image --- */}
+            <div className="lg:w-[45%] relative h-[40vh] lg:h-full overflow-hidden group">
+                {/* Overlay for mood */}
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-700 z-10 pointer-events-none" />
+
                 <img
                     src={heroBuilding}
                     alt="VERTEX Hotel Modern Architecture"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover animate-ken-burns transition-transform duration-[2000ms] ease-out group-hover:scale-110"
                 />
-
-                {/* Floating Buttons - Desktop */}
-                <div className="hidden lg:flex absolute bottom-16 left-1/2 -translate-x-1/2 gap-4 z-10">
-                    <button
-                        onClick={onBookRoom}
-                        className="px-8 py-3 border border-primary-foreground bg-transparent text-primary-foreground font-display text-sm tracking-widest hover:bg-primary-foreground hover:text-primary transition-all duration-300 backdrop-blur-sm">
-                        BOOK A SUITE
-                    </button>
-                    <button
-                        onClick={onBookTable}
-                        className="px-8 py-3 border border-foreground bg-background text-foreground font-display text-sm tracking-widest hover:bg-foreground hover:text-background transition-all duration-300">
-                        RESERVE TABLE
-                    </button>
-                </div>
             </div>
         </section>
     );
