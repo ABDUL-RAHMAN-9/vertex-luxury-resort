@@ -73,7 +73,7 @@ const AboutSection = () => {
                                     <Star className="w-3 h-3 fill-current" />
                                 </div>
                                 <p className="font-display text-lg leading-tight text-vertex-black">
-                                    Voted #1 Design Hotel 2024
+                                    Voted #1 Design Hotel 2025
                                 </p>
                             </div>
                         </div>
@@ -87,7 +87,7 @@ const AboutSection = () => {
                                         ? "opacity-100 translate-x-0"
                                         : "opacity-0 -translate-x-4"
                                 }`}>
-                                Since 2024
+                                Since 2025
                             </span>
                             <h2 className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.1] text-vertex-black">
                                 <span

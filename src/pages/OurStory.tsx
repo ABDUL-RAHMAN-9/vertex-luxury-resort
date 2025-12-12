@@ -79,7 +79,7 @@ const OurStory = () => {
                     <p
                         className="text-vertex-gold text-xs font-bold tracking-[0.4em] uppercase animate-fade-in opacity-0"
                         style={{ animationFillMode: "forwards" }}>
-                        Est. 2024
+                        Est. 2025
                     </p>
 
                     <h1
