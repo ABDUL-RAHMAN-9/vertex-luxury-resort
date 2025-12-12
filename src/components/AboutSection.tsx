@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Star, ShieldCheck, Gem } from "lucide-react";
+import { Link } from "react-router-dom";
 import lobbyImage from "@/assets/lobby.jpg";
 
 const AboutSection = () => {
@@ -164,11 +165,19 @@ const AboutSection = () => {
                                     ? "opacity-100 translate-y-0"
                                     : "opacity-0 translate-y-4"
                             }`}>
-                            <a
-                                href="#"
-                                className="inline-block border-b border-vertex-black pb-1 text-sm tracking-widest uppercase hover:text-vertex-gold hover:border-vertex-gold transition-colors duration-300">
-                                Discover Our Story
-                            </a>
+                            {/* "More Info" Link */}
+                            <div
+                                className={`pt-4 transition-all duration-1000 delay-[1200ms] ${
+                                    isVisible
+                                        ? "opacity-100 translate-y-0"
+                                        : "opacity-0 translate-y-4"
+                                }`}>
+                                <Link
+                                    to="/story"
+                                    className="inline-block border-b border-vertex-black pb-1 text-sm tracking-widest uppercase hover:text-vertex-gold hover:border-vertex-gold transition-colors duration-300">
+                                    Discover Our Story
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>
