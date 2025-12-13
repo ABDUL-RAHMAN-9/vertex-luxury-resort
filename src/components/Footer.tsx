@@ -16,8 +16,8 @@ const Footer = () => {
                             VERTEX
                         </h2>
                         <p className="text-white/60 font-light leading-relaxed">
-                            Experience the pinnacle of luxury hospitality. Where
-                            architectural brilliance meets unparalleled service.
+                            Experience the pinnacle of modern sanctuary. Where
+                            architectural brilliance meets the art of living.
                         </p>
                     </div>
 
