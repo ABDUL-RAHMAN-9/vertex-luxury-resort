@@ -1,65 +1,96 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import {
-    ArrowLeft,
-    Clock,
-    PenTool,
-    Award,
-    Quote,
-    ChevronDown,
-} from "lucide-react";
-import { set } from "date-fns";
-// --- Helper: Scroll To Top ---
-const ScrollToTop = () => {
+import { ArrowLeft, ArrowDown, Maximize2 } from "lucide-react";
+
+// --- Custom Hook for Scroll Reveals ---
+const useReveal = (threshold = 0.1) => {
+    const [isVisible, setIsVisible] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
-    return null;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                    observer.disconnect(); // Trigger once
+                }
+            },
+            { threshold }
+        );
+
+        if (ref.current) observer.observe(ref.current);
+        return () => observer.disconnect();
+    }, [threshold]);
+
+    return { ref, isVisible };
+};
+
+// --- Sub-Component: Reveal Text ---
+const RevealText = ({
+    children,
+    delay = 0,
+    className = "",
+}: {
+    children: React.ReactNode;
+    delay?: number;
+    className?: string;
+}) => {
+    const { ref, isVisible } = useReveal();
+    return (
+        <div
+            ref={ref}
+            className={`transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${className} ${
+                isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-12"
+            }`}
+            style={{ transitionDelay: `${delay}ms` }}>
+            {children}
+        </div>
+    );
 };
 
 const OurStory = () => {
     const navigate = useNavigate();
 
+    // --- FIX: SCROLL TO TOP ON MOUNT ---
+    // This ensures the page always starts at the very top
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
+    // Scroll progress logic
+    const [scrollProgress, setScrollProgress] = useState(0);
+    useEffect(() => {
+        const handleScroll = () => {
+            const totalScroll = document.documentElement.scrollTop;
+            const windowHeight =
+                document.documentElement.scrollHeight -
+                document.documentElement.clientHeight;
+            const scroll = `${totalScroll / windowHeight}`;
+            setScrollProgress(Number(scroll));
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     const handleStartJourney = () => {
-        navigate("/"); // go to home page and then smoothly scroll to footer
+        navigate("/");
         setTimeout(() => {
             const footer = document.getElementById("footer");
-            if (footer) {
-                footer.scrollIntoView({ behavior: "smooth" });
-            }
+            if (footer) footer.scrollIntoView({ behavior: "smooth" });
         }, 100);
     };
 
-    const [visibleSections, setVisibleSections] = useState<Set<string>>(
-        new Set()
-    );
-    const observer = useRef<IntersectionObserver | null>(null);
-
-    useEffect(() => {
-        observer.current = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        setVisibleSections((prev) =>
-                            new Set(prev).add(entry.target.id)
-                        );
-                    }
-                });
-            },
-            { threshold: 0.15 }
-        );
-
-        const sections = document.querySelectorAll(".reveal-section");
-        sections.forEach((el) => observer.current?.observe(el));
-
-        return () => observer.current?.disconnect();
-    }, []);
-
-    const isVisible = (id: string) => visibleSections.has(id);
-
     return (
-        <div className="bg-vertex-black min-h-screen text-white overflow-x-hidden selection:bg-vertex-gold selection:text-black">
-            <ScrollToTop />
+        <div className="bg-[#050505] min-h-screen text-[#Eaeaea] font-sans selection:bg-vertex-gold selection:text-black">
+            {/* --- PROGRESS BAR (Left Side) --- */}
+            <div className="fixed left-0 top-0 h-full w-[2px] bg-white/5 z-50 hidden lg:block">
+                <div
+                    className="w-full bg-vertex-gold transition-all duration-100 ease-out"
+                    style={{ height: `${scrollProgress * 100}%` }}
+                />
+            </div>
 
             {/* --- NAVIGATION --- */}
             <nav
@@ -67,179 +98,168 @@ const OurStory = () => {
                 style={{ animationFillMode: "forwards" }}>
                 <Link
                     to="/"
-                    className="group flex items-center gap-2 text-sm font-display tracking-widest uppercase hover:text-vertex-gold transition-colors">
+                    className="group flex items-center gap-2 text-sm font-display tracking-widest uppercase hover:text-vertex-gold transition-colors text-white">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    Back to Resort
+                    Back to Home
                 </Link>
-                <div className="font-display font-bold text-xl tracking-widest">
+                <div className="font-display font-bold text-xl tracking-widest text-white">
                     VERTEX
                 </div>
             </nav>
 
             {/* --- HERO SECTION --- */}
-            <header className="relative h-[90vh] flex items-center justify-center overflow-hidden">
-                {/* Parallax Background */}
-                <div
-                    className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-50 fixed-bg"
-                    style={{ backgroundAttachment: "fixed" }}
-                />
-                {/* Gradient Overlay for Text Readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-vertex-black" />
+            <header className="relative h-screen flex flex-col justify-center px-6 md:px-24 overflow-hidden border-b border-white/5">
+                {/* Background Video/Image Placeholder */}
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent z-10" />
+                    <img
+                        src="https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1974&auto=format&fit=crop"
+                        className="w-full h-full object-cover opacity-40 scale-105 animate-slow-zoom"
+                        alt="Background"
+                    />
+                </div>
 
-                <div className="relative z-10 text-center space-y-6 px-4 max-w-4xl mx-auto">
-                    {/* Fixed Blink: Added opacity-0 class so it hides until animation starts */}
-                    <p
-                        className="text-vertex-gold text-xs font-bold tracking-[0.4em] uppercase animate-fade-in opacity-0"
-                        style={{ animationFillMode: "forwards" }}>
-                        Est. 2025
-                    </p>
+                <div className="relative z-20 max-w-7xl">
+                    <div className="flex items-center gap-4 mb-8 overflow-hidden">
+                        <span className="h-[1px] w-12 bg-vertex-gold animate-slide-right" />
+                        <p className="text-vertex-gold text-xs font-bold tracking-[0.4em] uppercase animate-fade-in">
+                            Est. 2025
+                        </p>
+                    </div>
 
                     <h1
-                        className="font-display text-6xl md:text-8xl lg:text-[10rem] leading-none font-bold tracking-tighter animate-fade-up opacity-0 text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60"
+                        className="font-display text-7xl md:text-9xl lg:text-[11rem] leading-[0.85] tracking-tighter text-white mix-blend-overlay opacity-0 animate-fade-up"
                         style={{
                             animationDelay: "200ms",
                             animationFillMode: "forwards",
                         }}>
-                        THE GENESIS
+                        CULINARY <br />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">
+                            ARCHITECTS.
+                        </span>
                     </h1>
-
-                    <p
-                        className="max-w-xl mx-auto text-white/80 font-light text-lg md:text-xl leading-relaxed animate-fade-up opacity-0"
-                        style={{
-                            animationDelay: "500ms",
-                            animationFillMode: "forwards",
-                        }}>
-                        Where architectural Brutalism meets the warmth of
-                        organic luxury. This is the story of how Vertex
-                        redefined the skyline.
-                    </p>
                 </div>
 
-                {/* Scroll Indicator */}
-                <div className="absolute bottom-10 animate-bounce duration-[2000ms] opacity-50">
-                    <ChevronDown className="w-6 h-6 text-white" />
+                <div className="absolute bottom-12 left-6 md:left-24 right-6 md:right-24 flex justify-between items-end z-20">
+                    <p className="max-w-xs text-xs md:text-sm text-white/50 font-light leading-relaxed uppercase tracking-wider hidden md:block">
+                        Scroll to discover the <br /> art of dining & wellness
+                    </p>
+                    <ArrowDown className="w-5 h-5 text-white animate-bounce opacity-50" />
                 </div>
             </header>
 
-            {/* --- CHAPTER 1: THE VISION --- */}
-            <section
-                id="vision"
-                className="py-32 container mx-auto px-6 reveal-section">
-                <div className="flex flex-col md:flex-row gap-16 items-center">
-                    {/* Image Side */}
-                    <div
-                        className={`md:w-1/2 transition-all duration-1000 ease-out ${
-                            isVisible("vision")
-                                ? "opacity-100 translate-x-0"
-                                : "opacity-0 -translate-x-20"
-                        }`}>
-                        <div className="relative group overflow-hidden">
-                            <div className="absolute inset-0 bg-vertex-gold/10 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            <img
-                                src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=1931&auto=format&fit=crop"
-                                alt="Architectural Sketch"
-                                className="w-full h-[600px] object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-in-out scale-100 group-hover:scale-105"
-                            />
-                            {/* Floating Quote Card */}
-                            <div className="absolute -bottom-6 -right-6 bg-vertex-gold p-8 max-w-xs shadow-2xl hidden md:block z-20 transition-transform duration-500 hover:-translate-y-2">
-                                <Quote className="w-8 h-8 text-black mb-4 opacity-50" />
-                                <p className="text-black font-serif italic text-lg leading-relaxed">
-                                    "We wanted to build something that felt like
-                                    it had always been there, yet looked like
-                                    nothing else."
-                                </p>
+            {/* --- SECTION 1: THE MANIFESTO (Sticky Layout) --- */}
+            <section className="relative py-32 border-b border-white/5">
+                <div className="container mx-auto px-6 md:px-24">
+                    <div className="flex flex-col lg:flex-row gap-20">
+                        {/* Sticky Header */}
+                        <div className="lg:w-1/3">
+                            <div className="sticky top-32">
+                                <RevealText>
+                                    <h2 className="font-display text-4xl md:text-5xl mb-6">
+                                        THE <br /> CONCEPT
+                                    </h2>
+                                    <div className="w-12 h-[2px] bg-vertex-gold mb-6" />
+                                    <p className="text-white/60 text-sm leading-relaxed font-light">
+                                        01 — Gastronomy <br />
+                                        02 — Viticulture <br />
+                                        03 — Restoration
+                                    </p>
+                                </RevealText>
                             </div>
                         </div>
-                    </div>
 
-                    {/* Text Side */}
-                    <div
-                        className={`md:w-1/2 space-y-8 transition-all duration-1000 delay-300 ease-out ${
-                            isVisible("vision")
-                                ? "opacity-100 translate-x-0"
-                                : "opacity-0 translate-x-20"
-                        }`}>
-                        <h2 className="font-display text-4xl md:text-6xl text-white">
-                            CHAPTER I: <br />
-                            <span className="text-white/30">THE SKETCH</span>
-                        </h2>
-                        <div className="space-y-6 text-white/70 font-light leading-relaxed text-lg border-l border-white/10 pl-8">
-                            <p>
-                                It began with a single line on a napkin in a
-                                cafe in Zurich. Our lead architect, Adrian
-                                Vertex, envisioned a structure that didn't just
-                                house people, but elevated their state of mind.
-                            </p>
-                            <p>
-                                The challenge was impossible: create a monolith
-                                of concrete and glass that felt warm, inviting,
-                                and intimate.
-                            </p>
-                            <p>
-                                Three years of construction. 12,000 tons of raw
-                                concrete. One singular vision. The result is a
-                                building that breathes.
-                            </p>
+                        {/* Scrolling Content */}
+                        <div className="lg:w-2/3 space-y-32">
+                            <RevealText>
+                                <p className="text-2xl md:text-4xl font-light leading-tight text-white/90">
+                                    "We didn't just want to open a restaurant.
+                                    We wanted to create a{" "}
+                                    <span className="text-vertex-gold italic font-serif">
+                                        temple of flavor
+                                    </span>{" "}
+                                    where time slows down."
+                                </p>
+                            </RevealText>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <RevealText delay={200}>
+                                    <h3 className="text-xs font-bold tracking-widest uppercase text-white/40 mb-4">
+                                        The Palate
+                                    </h3>
+                                    <p className="text-white/70 font-light leading-relaxed">
+                                        A fusion of culinary excellence and
+                                        architectural brutalism. Here, the plate
+                                        is the canvas, and the wine list is a
+                                        curated library of history.
+                                    </p>
+                                </RevealText>
+                                <RevealText delay={400}>
+                                    <h3 className="text-xs font-bold tracking-widest uppercase text-white/40 mb-4">
+                                        The Pause
+                                    </h3>
+                                    <p className="text-white/70 font-light leading-relaxed">
+                                        Beyond dining, we offer restoration. A
+                                        hidden spa and lounge designed to
+                                        cleanse the senses before or after your
+                                        meal.
+                                    </p>
+                                </RevealText>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* --- CHAPTER 2: THE PHILOSOPHY (Faster Grid) --- */}
-            <section
-                id="philosophy"
-                className="py-32 bg-white/5 reveal-section relative overflow-hidden">
-                {/* Background Decor */}
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-vertex-gold/5 rounded-full blur-[100px] pointer-events-none" />
-
-                <div className="container mx-auto px-6 relative z-10">
-                    <div className="text-center max-w-3xl mx-auto mb-20">
-                        <span className="text-vertex-gold text-xs font-bold tracking-[0.3em] uppercase block mb-4">
-                            Our Core Values
+            {/* --- SECTION 2: ARCHITECTURAL DETAILS (Grid) --- */}
+            <section className="py-32 bg-[#080808]">
+                <div className="container mx-auto px-6 md:px-24">
+                    <RevealText className="mb-16 flex items-end justify-between">
+                        <h2 className="font-display text-4xl">SENSORY ETHOS</h2>
+                        <span className="hidden md:block text-xs text-white/40 tracking-widest uppercase">
+                            Designed for taste
                         </span>
-                        <h2 className="font-display text-4xl md:text-5xl">
-                            DESIGNED FOR SENSES
-                        </h2>
-                    </div>
+                    </RevealText>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {/* Architectural Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 border-t border-l border-white/10">
                         {[
                             {
-                                icon: PenTool,
-                                title: "Architectural Integrity",
-                                text: "Every curve and corner serves a purpose. We believe beauty lies in functionality.",
+                                title: "The Kitchen",
+                                desc: "Open-fire cooking center stage.",
                             },
                             {
-                                icon: Clock,
-                                title: "Timeless Silence",
-                                text: "Our walls are engineered for absolute acoustics. In a noisy world, silence is the ultimate luxury.",
+                                title: "The Cellar",
+                                desc: "3,000 bottles, perfectly aged.",
                             },
                             {
-                                icon: Award,
-                                title: "Uncompromising Service",
-                                text: "We don't use scripts. Our staff is trained to anticipate needs before you even realize them.",
+                                title: "Acoustics",
+                                desc: "Engineered for intimate conversation.",
                             },
-                        ].map((item, idx) => (
+                            {
+                                title: "The Spa",
+                                desc: "Pre-dinner sensory calibration.",
+                            },
+                            {
+                                title: "Lighting",
+                                desc: "Shadows that frame the plating.",
+                            },
+                            {
+                                title: "Materiality",
+                                desc: "Stone tables, velvet seating.",
+                            },
+                        ].map((item, i) => (
                             <div
-                                key={idx}
-                                // UPDATED: Changed duration-500 to duration-300 for snappier hover
-                                className={`p-10 border border-white/10 bg-vertex-black/50 backdrop-blur-sm 
-                                hover:border-vertex-gold hover:bg-white/10 hover:-translate-y-2
-                                transition-all duration-300 group cursor-default
-                                ${
-                                    isVisible("philosophy")
-                                        ? "opacity-100 translate-y-0"
-                                        : "opacity-0 translate-y-10"
-                                }`}
-                                style={{ transitionDelay: `${idx * 150}ms` }}>
-                                <div className="w-14 h-14 bg-white/5 rounded-full flex items-center justify-center mb-6 group-hover:bg-vertex-gold group-hover:text-black transition-colors duration-300">
-                                    <item.icon className="w-6 h-6 text-vertex-gold group-hover:text-black transition-colors duration-300" />
+                                key={i}
+                                className="group relative border-r border-b border-white/10 p-12 hover:bg-white/5 transition-colors duration-500">
+                                <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <Maximize2 className="w-4 h-4 text-vertex-gold" />
                                 </div>
-                                <h3 className="font-display text-xl mb-4 tracking-wide text-white group-hover:text-vertex-gold transition-colors duration-300">
+                                <h3 className="font-display text-2xl mb-2 text-white/90">
                                     {item.title}
                                 </h3>
-                                <p className="text-white/60 font-light leading-relaxed group-hover:text-white/90 transition-colors duration-300">
-                                    {item.text}
+                                <p className="text-sm text-white/50 font-mono">
+                                    {item.desc}
                                 </p>
                             </div>
                         ))}
@@ -247,47 +267,34 @@ const OurStory = () => {
                 </div>
             </section>
 
-            {/* --- IMAGE BREAK --- */}
-            <section className="h-[70vh] relative reveal-section overflow-hidden">
-                <div
-                    className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1600607686527-6fb886090705?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center"
-                    style={{ backgroundAttachment: "fixed" }}
-                />
-                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                    <h2
-                        className={`font-serif italic text-4xl md:text-6xl text-white text-center px-4 leading-tight transition-all duration-1000 delay-300
-                        ${
-                            isVisible("philosophy")
-                                ? "opacity-100 scale-100"
-                                : "opacity-0 scale-90"
-                        }`}>
-                        "Luxury is the absence <br /> of necessary things."
-                    </h2>
+            {/* --- SECTION 3: VISUAL BREAK --- */}
+            <section className="h-[80vh] relative flex items-center justify-center overflow-hidden">
+                <div className="absolute inset-0 bg-vertex-black/20 z-10" />
+                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-fixed grayscale hover:grayscale-0 transition-all duration-[2s]" />
+                <div className="relative z-20 text-center mix-blend-difference">
+                    <p className="font-serif italic text-3xl md:text-5xl text-white tracking-wide">
+                        "Dining is the ultimate <br /> form of art."
+                    </p>
                 </div>
             </section>
 
-            {/* --- FOOTER CTA --- */}
-            <section className="py-32 text-center reveal-section bg-vertex-black relative">
-                <div
-                    className={`transition-all duration-1000 ${
-                        isVisible("philosophy")
-                            ? "opacity-100 translate-y-0"
-                            : "opacity-0 translate-y-10"
-                    }`}>
+            {/* --- FOOTER CTA (Original Style) --- */}
+            <section className="py-32 text-center reveal-section bg-[#050505] relative border-t border-white/10">
+                <RevealText>
                     <h2 className="font-display text-5xl md:text-8xl mb-8 tracking-tighter text-white/90">
-                        BE PART OF <br /> THE LEGACY
+                        RESERVE YOUR <br /> EXPERIENCE
                     </h2>
                     <p className="text-white/50 mb-12 max-w-md mx-auto text-lg font-light">
-                        The next chapter is yours to write. Experience the
-                        Vertex legacy firsthand.
+                        A table at Vertex is not just a meal. It is a memory.
+                        Secure your place in the legacy.
                     </p>
 
                     <button
                         onClick={handleStartJourney}
                         className="px-12 py-5 border border-vertex-gold text-vertex-gold font-display text-sm tracking-widest hover:bg-vertex-gold hover:text-black transition-all duration-300 uppercase">
-                        Start Your Journey
+                        Book A Table
                     </button>
-                </div>
+                </RevealText>
             </section>
         </div>
     );
