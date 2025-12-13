@@ -84,7 +84,7 @@ const Footer = () => {
                             <li>123 Luxury Avenue</li>
                             <li>New York, NY 10001</li>
                             <li>+1 (555) 123-4567</li>
-                            <li>concierge@vertex.com</li>
+                            <li>@vertex-sanctuary.com</li>
                         </ul>
                     </div>
                     {/* Socials */}
