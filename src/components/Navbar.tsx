@@ -43,7 +43,7 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
         { name: "The Hotel", href: "#hotel" },
         { name: "Dining", href: "#dining" },
         { name: "Wellness", href: "#wellness" },
-        { name: "Reservations", action: "reservations" },
+        { name: "Reservations", action: "reservations" }, // This will be filtered out on Desktop
         { name: "Contact", href: "#footer" },
     ];
 
@@ -67,34 +67,36 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                     <div className="flex items-center justify-between">
                         {/* --- LEFT: Navigation Links (Desktop) --- */}
                         <div className="hidden lg:flex items-center gap-8">
-                            {navLinks.map((link) => (
-                                <a
-                                    key={link.name}
-                                    href={link.href}
-                                    // CHANGE HERE: Added 'pb-1' (4px) or use 'pb-1.5' (6px)
-                                    className="relative group overflow-hidden pb-1">
-                                    <span
-                                        className={cn(
-                                            "font-display text-xs tracking-[0.2em] uppercase transition-colors duration-300 block",
-                                            scrolled
-                                                ? "text-white group-hover:text-vertex-gold"
-                                                : "text-white/90 group-hover:text-white"
-                                        )}>
-                                        {link.name}
-                                    </span>
+                            {navLinks
+                                // FILTER ADDED: This removes "Reservations" from the left side links
+                                .filter((link) => link.name !== "Reservations")
+                                .map((link) => (
+                                    <a
+                                        key={link.name}
+                                        href={link.href}
+                                        // Kept your spacing fix (pb-1) here
+                                        className="relative group overflow-hidden pb-1">
+                                        <span
+                                            className={cn(
+                                                "font-display text-xs tracking-[0.2em] uppercase transition-colors duration-300 block",
+                                                scrolled
+                                                    ? "text-white group-hover:text-vertex-gold"
+                                                    : "text-white/90 group-hover:text-white"
+                                            )}>
+                                            {link.name}
+                                        </span>
 
-                                    {/* Hover Underline Animation */}
-                                    <span
-                                        className={cn(
-                                            // The line sits at the bottom of the padding I just added
-                                            "absolute bottom-0 left-0 w-full h-[1px] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300",
-                                            scrolled
-                                                ? "bg-vertex-gold"
-                                                : "bg-white"
-                                        )}
-                                    />
-                                </a>
-                            ))}
+                                        {/* Hover Underline Animation */}
+                                        <span
+                                            className={cn(
+                                                "absolute bottom-0 left-0 w-full h-[1px] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300",
+                                                scrolled
+                                                    ? "bg-vertex-gold"
+                                                    : "bg-white"
+                                            )}
+                                        />
+                                    </a>
+                                ))}
                         </div>
 
                         {/* --- CENTER: Logo --- */}
@@ -139,21 +141,21 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                 ))}
                             </div>
 
-                            {/* Reservations Button */}
+                            {/* Reservations Button (This remains visible on Desktop) */}
                             <button
                                 onClick={() => {
                                     handleViewReservations();
                                     setMobileOpen(false);
                                 }}
                                 className="
-        flex items-center justify-center gap-3
-        px-5 py-2.5
-        border border-white/40
-        text-white
-        font-display text-xs tracking-widest uppercase
-        hover:border-vertex-gold hover:bg-vertex-gold hover:text-black
-        transition-all duration-300
-    ">
+                                    flex items-center justify-center gap-3
+                                    px-5 py-2.5
+                                    border border-white/40
+                                    text-white
+                                    font-display text-xs tracking-widest uppercase
+                                    hover:border-vertex-gold hover:bg-vertex-gold hover:text-black
+                                    transition-all duration-300
+                                ">
                                 <Calendar className="w-4 h-4" />
                                 Reservations
                             </button>
@@ -188,7 +190,7 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10 pointer-events-none" />
 
                 <div className="container mx-auto px-6 h-full flex flex-col justify-center relative z-10">
-                    {/* --- Navigation List --- */}
+                    {/* --- Navigation List (Shows ALL links on mobile) --- */}
                     <div className="flex flex-col gap-6 mb-12">
                         {navLinks.map((link, i) => (
                             <a
@@ -202,14 +204,14 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                 }}
                                 className={cn(
                                     `
-                        cursor-pointer
-                        font-display text-4xl md:text-5xl
-                        text-white tracking-tight
-                        hover:text-vertex-gold
-                        transition-colors duration-200
-                        transform translate-y-8 opacity-0
-                        active:scale-95
-                        `,
+                                    cursor-pointer
+                                    font-display text-4xl md:text-5xl
+                                    text-white tracking-tight
+                                    hover:text-vertex-gold
+                                    transition-colors duration-200
+                                    transform translate-y-8 opacity-0
+                                    active:scale-95
+                                    `,
                                     mobileOpen && "translate-y-0 opacity-100"
                                 )}
                                 style={{
@@ -232,11 +234,11 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                 setMobileOpen(false);
                             }}
                             className="
-                    flex flex-col items-center justify-center gap-2
-                    p-6 border border-white/20
-                    hover:bg-white/10
-                    transition-colors duration-200
-                ">
+                                flex flex-col items-center justify-center gap-2
+                                p-6 border border-white/20
+                                hover:bg-white/10
+                                transition-colors duration-200
+                            ">
                             <Calendar className="w-6 h-6 text-vertex-gold" />
                             <span className="font-display text-sm tracking-widest text-white uppercase">
                                 Book Suite
@@ -249,11 +251,11 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                 setMobileOpen(false);
                             }}
                             className="
-                    flex flex-col items-center justify-center gap-2
-                    p-6 border border-white/20
-                    hover:bg-white/10
-                    transition-colors duration-200
-                ">
+                                flex flex-col items-center justify-center gap-2
+                                p-6 border border-white/20
+                                hover:bg-white/10
+                                transition-colors duration-200
+                            ">
                             <Phone className="w-6 h-6 text-vertex-gold" />
                             <span className="font-display text-sm tracking-widest text-white uppercase">
                                 Book Table
