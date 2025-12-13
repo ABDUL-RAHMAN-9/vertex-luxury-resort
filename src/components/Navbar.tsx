@@ -9,6 +9,7 @@ import {
     Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 interface NavbarProps {
     onBookRoom: () => void;
@@ -18,6 +19,7 @@ interface NavbarProps {
 const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
     const [scrolled, setScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
+    const navigate = useNavigate();
 
     // Handle Scroll Effect
     useEffect(() => {
@@ -41,8 +43,16 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
         { name: "The Hotel", href: "#hotel" },
         { name: "Dining", href: "#dining" },
         { name: "Wellness", href: "#wellness" },
-        { name: "Contact", href: "#footer" }, 
+        { name: "Reservations", action: "reservations" },
+        { name: "Contact", href: "#footer" },
     ];
+
+    const handleViewReservations = () => {
+        navigate("/my-reservations");
+        setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 50);
+    };
 
     return (
         <>
@@ -126,16 +136,23 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                 ))}
                             </div>
 
-                            {/* Book Button */}
+                            {/* Reservations Button */}
                             <button
-                                onClick={onBookRoom}
-                                className={cn(
-                                    "px-6 py-2 border font-display text-xs tracking-widest uppercase transition-all duration-300 hover:bg-vertex-gold hover:text-black hover:border-vertex-gold",
-                                    scrolled
-                                        ? "border-white/30 text-white"
-                                        : "border-white/50 text-white"
-                                )}>
-                                Reserve
+                                onClick={() => {
+                                    handleViewReservations();
+                                    setMobileOpen(false);
+                                }}
+                                className="
+        flex items-center justify-center gap-3
+        px-5 py-2.5
+        border border-white/40
+        text-white
+        font-display text-xs tracking-widest uppercase
+        hover:border-vertex-gold hover:bg-vertex-gold hover:text-black
+        transition-all duration-300
+    ">
+                                <Calendar className="w-4 h-4" />
+                                Reservations
                             </button>
                         </div>
 
@@ -168,15 +185,28 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618773928121-c32242e63f39?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10 pointer-events-none" />
 
                 <div className="container mx-auto px-6 h-full flex flex-col justify-center relative z-10">
-                    {/* Navigation List */}
+                    {/* --- Navigation List --- */}
                     <div className="flex flex-col gap-6 mb-12">
                         {navLinks.map((link, i) => (
                             <a
                                 key={link.name}
                                 href={link.href}
-                                onClick={() => setMobileOpen(false)}
+                                onClick={() => {
+                                    if (link.action === "reservations") {
+                                        handleViewReservations();
+                                    }
+                                    setMobileOpen(false);
+                                }}
                                 className={cn(
-                                    "font-display text-4xl md:text-5xl text-white tracking-tight hover:text-vertex-gold transition-all duration-500 transform translate-y-8 opacity-0",
+                                    `
+                        cursor-pointer
+                        font-display text-4xl md:text-5xl
+                        text-white tracking-tight
+                        hover:text-vertex-gold
+                        transition-colors duration-200
+                        transform translate-y-8 opacity-0
+                        active:scale-95
+                        `,
                                     mobileOpen && "translate-y-0 opacity-100"
                                 )}
                                 style={{
@@ -187,7 +217,7 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                         ))}
                     </div>
 
-                    {/* Action Buttons (Mobile) */}
+                    {/* --- Action Buttons (Mobile) --- */}
                     <div
                         className={cn(
                             "grid grid-cols-2 gap-4 transition-all duration-700 delay-500 transform translate-y-8 opacity-0",
@@ -198,7 +228,12 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                 onBookRoom();
                                 setMobileOpen(false);
                             }}
-                            className="flex flex-col items-center justify-center gap-2 p-6 border border-white/20 hover:bg-white/10 transition-colors">
+                            className="
+                    flex flex-col items-center justify-center gap-2
+                    p-6 border border-white/20
+                    hover:bg-white/10
+                    transition-colors duration-200
+                ">
                             <Calendar className="w-6 h-6 text-vertex-gold" />
                             <span className="font-display text-sm tracking-widest text-white uppercase">
                                 Book Suite
@@ -210,7 +245,12 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                 onBookTable();
                                 setMobileOpen(false);
                             }}
-                            className="flex flex-col items-center justify-center gap-2 p-6 border border-white/20 hover:bg-white/10 transition-colors">
+                            className="
+                    flex flex-col items-center justify-center gap-2
+                    p-6 border border-white/20
+                    hover:bg-white/10
+                    transition-colors duration-200
+                ">
                             <Phone className="w-6 h-6 text-vertex-gold" />
                             <span className="font-display text-sm tracking-widest text-white uppercase">
                                 Book Table
@@ -218,13 +258,13 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                         </button>
                     </div>
 
-                    {/* Socials (Mobile) */}
+                    {/* --- Socials (Mobile) --- */}
                     <div className="absolute bottom-10 left-0 w-full flex justify-center gap-8">
                         {[Instagram, Facebook, Twitter].map((Icon, i) => (
                             <a
                                 key={i}
                                 href="#"
-                                className="text-white/50 hover:text-vertex-gold transition-colors">
+                                className="cursor-pointer text-white/50 hover:text-vertex-gold transition-colors duration-200">
                                 <Icon size={24} />
                             </a>
                         ))}
