@@ -71,7 +71,8 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                 <a
                                     key={link.name}
                                     href={link.href}
-                                    className="relative group overflow-hidden">
+                                    // CHANGE HERE: Added 'pb-1' (4px) or use 'pb-1.5' (6px)
+                                    className="relative group overflow-hidden pb-1">
                                     <span
                                         className={cn(
                                             "font-display text-xs tracking-[0.2em] uppercase transition-colors duration-300 block",
@@ -81,9 +82,11 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                         )}>
                                         {link.name}
                                     </span>
+
                                     {/* Hover Underline Animation */}
                                     <span
                                         className={cn(
+                                            // The line sits at the bottom of the padding I just added
                                             "absolute bottom-0 left-0 w-full h-[1px] transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300",
                                             scrolled
                                                 ? "bg-vertex-gold"
