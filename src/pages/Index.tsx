@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import AboutSection from "@/components/AboutSection";
@@ -6,43 +5,34 @@ import FeatureSections from "@/components/FeatureSections";
 import DiningGallery from "@/components/DiningGallery";
 import AccommodationGrid from "@/components/AccommodationGrid";
 import Footer from "@/components/Footer";
-import BookingModal from "@/components/BookingModal";
 
-const Index = () => {
-    const [bookingModal, setBookingModal] = useState<{
-        open: boolean;
-        type: "room" | "table";
-    }>({
-        open: false,
-        type: "room",
-    });
+// 1. Define the props that App.tsx is trying to pass
+interface IndexProps {
+    onBookRoom: () => void;
+    onBookTable: () => void;
+}
 
-    const openBookRoom = () => setBookingModal({ open: true, type: "room" });
-    const openBookTable = () => setBookingModal({ open: true, type: "table" });
-    const closeModal = () => setBookingModal({ ...bookingModal, open: false });
-
+// 2. Accept these props in the component
+const Index = ({ onBookRoom, onBookTable }: IndexProps) => {
     return (
         <>
-            <Navbar onBookRoom={openBookRoom} onBookTable={openBookTable} />
+            {/* 3. Pass the props down to the components */}
+            <Navbar onBookRoom={onBookRoom} onBookTable={onBookTable} />
 
             <main>
                 <HeroSection
-                    onBookRoom={openBookRoom}
-                    onBookTable={openBookTable}
+                    onBookRoom={onBookRoom}
+                    onBookTable={onBookTable}
                 />
                 <AboutSection />
                 <FeatureSections />
-                <DiningGallery onBookTable={openBookTable} />
-                <AccommodationGrid onBookRoom={openBookRoom} />
+                <DiningGallery onBookTable={onBookTable} />
+                <AccommodationGrid onBookRoom={onBookRoom} />
             </main>
 
             <Footer />
 
-            <BookingModal
-                open={bookingModal.open}
-                onClose={closeModal}
-                type={bookingModal.type}
-            />
+            {/* REMOVED: <BookingModal /> (It is now in App.tsx) */}
         </>
     );
 };

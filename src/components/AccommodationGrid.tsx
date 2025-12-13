@@ -1,4 +1,7 @@
-import { ArrowUpRight, Maximize, Users, Wifi, Wind } from "lucide-react";
+import { ArrowUpRight, Maximize, Users, Wifi } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // IMPORT ADDED
+
+// Images (Keeping your existing imports)
 import bedroom from "@/assets/bedroom.jpg";
 import amenities from "@/assets/amenities.jpg";
 import bathroomMirror from "@/assets/bathroom-mirror.jpg";
@@ -8,7 +11,7 @@ interface AccommodationGridProps {
     onBookRoom: () => void;
 }
 
-// Data Structure for the Rooms (Simulating a database)
+// Data Structure for the Rooms
 const rooms = [
     {
         id: 1,
@@ -17,7 +20,7 @@ const rooms = [
         price: "$1,200",
         size: "120m²",
         guests: "2-4 Guests",
-        gridClass: "md:col-span-1 md:row-span-2 h-[500px] md:h-full", // Tall Card
+        gridClass: "md:col-span-1 md:row-span-2 h-[500px] md:h-full",
     },
     {
         id: 2,
@@ -26,7 +29,7 @@ const rooms = [
         price: "$850",
         size: "85m²",
         guests: "2 Guests",
-        gridClass: "md:col-span-1 md:row-span-2 h-[500px] md:h-full", // Tall Card
+        gridClass: "md:col-span-1 md:row-span-2 h-[500px] md:h-full",
     },
     {
         id: 3,
@@ -35,7 +38,7 @@ const rooms = [
         price: "$600",
         size: "60m²",
         guests: "2 Guests",
-        gridClass: "md:col-span-1 md:row-span-1 h-[300px]", // Short Card
+        gridClass: "md:col-span-1 md:row-span-1 h-[300px]",
     },
     {
         id: 4,
@@ -44,11 +47,19 @@ const rooms = [
         price: "$550",
         size: "55m²",
         guests: "2 Guests",
-        gridClass: "md:col-span-1 md:row-span-1 h-[300px]", // Short Card
+        gridClass: "md:col-span-1 md:row-span-1 h-[300px]",
     },
 ];
 
 const AccommodationGrid = ({ onBookRoom }: AccommodationGridProps) => {
+    const navigate = useNavigate(); // HOOK ADDED
+
+    // NAVIGATION HANDLER
+    const handleViewAll = () => {
+        navigate("/accommodations");
+        window.scrollTo(0, 0);
+    };
+
     return (
         <section
             id="hotel"
@@ -144,10 +155,11 @@ const AccommodationGrid = ({ onBookRoom }: AccommodationGridProps) => {
                     ))}
                 </div>
 
-                {/* --- FOOTER CTA --- */}
+                {/* --- FOOTER CTA (UPDATED) --- */}
                 <div className="flex justify-center mt-16">
                     <button
-                        onClick={onBookRoom}
+                        // UPDATED CLICK HANDLER
+                        onClick={handleViewAll}
                         className="group flex items-center gap-2 text-sm font-bold tracking-[0.2em] uppercase text-vertex-gold hover:text-white transition-colors duration-300">
                         View All Accommodations
                         <span className="block h-[1px] w-12 bg-vertex-gold group-hover:w-20 transition-all duration-300" />
