@@ -1,18 +1,24 @@
 import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { EmblaCarouselType } from "embla-carousel"; 
+import { EmblaCarouselType } from "embla-carousel";
 import {
     ArrowRight,
     ChevronLeft,
     ChevronRight,
     UtensilsCrossed,
 } from "lucide-react";
+
+// Images
 import cocktail from "@/assets/cocktail.jpg";
 import gourmetDish from "@/assets/gourmet-dish.jpg";
 import winePour from "@/assets/wine-pour.jpg";
 import pastry from "@/assets/pastry.jpg";
 
-// Added dummy pricing/categories for a "Real App" feel
+// Logic
+import { generateMenuPDF } from "@/lib/generateMenuPDF";
+import NotificationToast from "./ui/NotificationToast";
+
+// Data
 const items = [
     {
         src: cocktail,
@@ -43,7 +49,7 @@ const items = [
         alt: "Velvet Martini",
         category: "Lounge Bar",
         price: "$22",
-    }, // Duplicate for scrolling length
+    },
 ];
 
 interface DiningGalleryProps {
@@ -55,10 +61,11 @@ const DiningGallery = ({ onBookTable }: DiningGalleryProps) => {
     const [emblaRef, emblaApi] = useEmblaCarousel({
         loop: true,
         align: "start",
-        dragFree: true, // Allows smooth "momentum" dragging
+        dragFree: true,
     });
 
     const [scrollProgress, setScrollProgress] = useState(0);
+    const [isDownloading, setIsDownloading] = useState(false);
 
     // 2. Handle Scroll Progress Bar
     const onScroll = useCallback((emblaApi: EmblaCarouselType) => {
@@ -81,10 +88,32 @@ const DiningGallery = ({ onBookTable }: DiningGalleryProps) => {
         [emblaApi]
     );
 
+    // --- DOWNLOAD LOGIC ---
+    const handleDownloadMenu = () => {
+        setIsDownloading(true);
+
+        // Delay slightly to show the Toast before the browser generates the file
+        setTimeout(() => {
+            generateMenuPDF();
+
+            // Hide toast after a few seconds
+            setTimeout(() => {
+                setIsDownloading(false);
+            }, 2500);
+        }, 1000);
+    };
+
     return (
         <section
             id="dining"
-            className="py-24 lg:py-32 bg-white overflow-hidden">
+            className="py-24 lg:py-32 bg-white overflow-hidden relative">
+            {/* Notification Toast */}
+            <NotificationToast
+                isVisible={isDownloading}
+                message="Generating Seasonal Menu..."
+                onClose={() => setIsDownloading(false)}
+            />
+
             <div className="container mx-auto px-6 lg:px-12">
                 {/* --- HEADER SECTION --- */}
                 <div className="flex flex-col lg:flex-row justify-between items-end gap-12 mb-16">
@@ -197,7 +226,9 @@ const DiningGallery = ({ onBookTable }: DiningGalleryProps) => {
                         className="px-10 py-4 bg-vertex-black text-white font-display text-sm tracking-widest hover:bg-vertex-gold transition-colors duration-300">
                         RESERVE A TABLE
                     </button>
-                    <button className="px-10 py-4 border border-vertex-black text-vertex-black font-display text-sm tracking-widest hover:bg-gray-50 transition-colors duration-300">
+                    <button
+                        onClick={handleDownloadMenu}
+                        className="px-10 py-4 border border-vertex-black text-vertex-black font-display text-sm tracking-widest hover:bg-gray-50 transition-colors duration-300 active:scale-95">
                         DOWNLOAD MENU
                     </button>
                 </div>
