@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
     ArrowLeft,
-    BedDouble,
-    Clock,
+    Calendar,
     Users,
     CheckCircle2,
+    Clock,
+    BedDouble,
     Trash2,
 } from "lucide-react";
 import {
@@ -19,18 +20,34 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface Booking {
     id: string;
     type: "room" | "table";
+    name: string;
     date: string;
     guests: string;
-    roomOrTime: string;
+    detail: string;
 }
 
 const MyReservations = () => {
     const [bookings, setBookings] = useState<Booking[]>([]);
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    // Track scroll for dynamic Nav effect
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 20) {
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     useEffect(() => {
         const saved = localStorage.getItem("vertex_bookings");
@@ -42,152 +59,175 @@ const MyReservations = () => {
         setBookings([]);
     };
 
+    const dmSansStyle = { fontFamily: "'DM Sans', sans-serif" };
+
     return (
-        <div className="bg-vertex-black min-h-screen text-white overflow-x-hidden selection:bg-vertex-gold selection:text-black">
-            {/* --- NAVIGATION (MATCHES OUR STORY) --- */}
-            <nav className="fixed top-0 left-0 w-full p-6 z-50 mix-blend-difference flex justify-between items-center">
+        <div
+            style={dmSansStyle}
+            className="bg-[#0a0a0a] min-h-screen text-white selection:bg-vertex-gold selection:text-black">
+            {/* --- DYNAMIC NAVIGATION --- */}
+            <nav
+                className={cn(
+                    "fixed top-0 left-0 w-full p-6 z-50 flex justify-between items-center transition-all duration-500",
+                    isScrolled
+                        ? "bg-black/60 backdrop-blur-md border-b border-white/5 py-6"
+                        : "bg-transparent border-b border-transparent py-6"
+                )}>
                 <Link
                     to="/"
-                    className="group flex items-center gap-2 text-sm font-display tracking-widest uppercase hover:text-vertex-gold transition-colors">
+                    className="group flex items-center gap-2 text-sm tracking-widest uppercase text-white hover:text-vertex-gold transition-colors">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                     Back to Resort
                 </Link>
 
-                <div className="font-display font-bold text-xl tracking-widest">
+                <div className="font-bold text-xl tracking-[0.3em] uppercase">
                     VERTEX
                 </div>
             </nav>
 
             {/* --- CONTENT --- */}
-            <section className="pt-40 pb-24 px-4 md:px-8 max-w-6xl mx-auto">
-                {/* Header */}
-                <div className="text-center mb-16">
-                    <p className="text-vertex-gold text-xs font-bold tracking-[0.3em] uppercase mb-4">
-                        Your Stay
+            <main className="pt-48 pb-24 px-6 md:px-12 max-w-6xl mx-auto">
+                {/* Header (Bottom-to-Top Animation) */}
+                <div className="mb-20 text-center animate-in fade-in slide-in-from-bottom-8 duration-1000 ease-out fill-mode-both">
+                    <p className="text-vertex-gold text-[10px] font-bold tracking-[0.5em] uppercase mb-4">
+                        Exclusive Access
                     </p>
-                    <h1 className="font-display text-4xl md:text-6xl">
-                        Reservations
+                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight uppercase mb-6">
+                        My Reservations
                     </h1>
-                    <p className="text-white/50 mt-4 max-w-xl mx-auto">
-                        A summary of all your confirmed room and table bookings.
-                    </p>
+                    <div className="w-12 h-[1px] bg-vertex-gold/50 mx-auto" />
                 </div>
 
-                {/* Empty State */}
+                {/* Empty State with Invitation Text */}
                 {bookings.length === 0 && (
-                    <div className="text-center py-24 border border-white/10 rounded-2xl bg-white/5">
-                        <p className="text-lg text-white/60">
-                            No reservations found.
+                    <div className="py-32 border-t border-white/10 flex flex-col items-center justify-center text-center animate-in fade-in duration-1000">
+                        <p className="text-white/30 text-[10px] tracking-[0.4em] uppercase mb-6">
+                            No active reservations found
                         </p>
-                        <p className="text-sm text-white/40 mt-2">
-                            Your confirmed bookings will appear here.
+
+                        <p className="text-white/50 text-sm max-w-xs leading-relaxed mb-10 px-6">
+                            Your journey into the extraordinary is just a
+                            reservation away. Experience the pinnacle of refined
+                            luxury at Vertex.
                         </p>
+
+                        <Link
+                            to="/"
+                            className="text-[10px] text-vertex-gold border-b border-vertex-gold/30 pb-1 hover:text-white hover:border-white transition-all uppercase tracking-[0.3em]">
+                            Explore Collections
+                        </Link>
                     </div>
                 )}
 
-                {/* Cards */}
+                {/* Card Grid */}
                 {bookings.length > 0 && (
-                    <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {bookings.map((booking) => (
-                                <div
-                                    key={booking.id}
-                                    className="rounded-2xl bg-white/5 border border-white/10 p-6 hover:border-vertex-gold/40 transition-all">
-                                    {/* Top */}
-                                    <div className="flex justify-between items-start mb-6">
-                                        <div>
-                                            <p className="text-xs tracking-widest uppercase text-white/40">
-                                                Confirmation ID
-                                            </p>
-                                            <p className="font-mono text-vertex-gold text-sm mt-1">
-                                                {booking.id}
-                                            </p>
-                                        </div>
-
-                                        <span className="flex items-center gap-1 text-vertex-gold text-sm">
-                                            <CheckCircle2 className="w-4 h-4" />
-                                            Confirmed
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-300 fill-mode-both">
+                        {bookings.map((booking) => (
+                            <div
+                                key={booking.id}
+                                className="group relative bg-[#0e0e0e] border border-white/10 p-8 rounded-sm hover:border-vertex-gold/40 transition-all duration-500 overflow-hidden">
+                                <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/5">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-vertex-gold" />
+                                        <span className="text-[10px] tracking-[0.3em] uppercase text-white/40 font-semibold">
+                                            {booking.type === "room"
+                                                ? "Suite"
+                                                : "Table"}
                                         </span>
                                     </div>
+                                    <p className="text-[11px] font-mono text-vertex-gold/60">
+                                        REF: {booking.id}
+                                    </p>
+                                </div>
 
-                                    {/* Details */}
-                                    <div className="space-y-4 text-sm text-white/80">
-                                        <div className="flex items-center gap-3">
-                                            <Users className="w-5 h-5 text-vertex-gold" />
-                                            {booking.guests} Guests
+                                <div className="space-y-8">
+                                    <h3 className="text-2xl font-bold tracking-tight uppercase text-white group-hover:text-vertex-gold transition-colors duration-500">
+                                        {booking.name}
+                                    </h3>
+
+                                    <div className="grid grid-cols-2 gap-10">
+                                        <div className="space-y-2">
+                                            <p className="text-[9px] text-white/30 uppercase tracking-[0.2em]">
+                                                Scheduled Date
+                                            </p>
+                                            <div className="flex items-center gap-3 text-sm">
+                                                <Calendar className="w-4 h-4 text-vertex-gold/80" />
+                                                {booking.date}
+                                            </div>
                                         </div>
+                                        <div className="space-y-2">
+                                            <p className="text-[9px] text-white/30 uppercase tracking-[0.2em]">
+                                                Party Size
+                                            </p>
+                                            <div className="flex items-center gap-3 text-sm">
+                                                <Users className="w-4 h-4 text-vertex-gold/80" />
+                                                {booking.guests} Guests
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                        <div className="flex items-center gap-3">
+                                    <div className="pt-6 border-t border-white/5">
+                                        <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] mb-4">
+                                            Detail
+                                        </p>
+                                        <div className="flex items-center gap-4 text-xs text-white/90 bg-white/[0.03] px-5 py-4 rounded-sm border border-white/[0.05]">
                                             {booking.type === "room" ? (
-                                                <BedDouble className="w-5 h-5 text-vertex-gold" />
+                                                <BedDouble className="w-4 h-4 text-vertex-gold" />
                                             ) : (
-                                                <Clock className="w-5 h-5 text-vertex-gold" />
+                                                <Clock className="w-4 h-4 text-vertex-gold" />
                                             )}
-                                            {booking.roomOrTime}
-                                        </div>
-
-                                        <div className="flex items-center gap-3">
-                                            <Clock className="w-5 h-5 text-vertex-gold" />
-                                            {booking.date}
+                                            {booking.detail}
                                         </div>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-
-                        {/* Clear Action */}
-                        {/* --- CLEAR RESERVATIONS (MATCHES STORY CTA) --- */}
-                        <div className="mt-20 flex justify-center">
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <button
-                                        className="
-                px-12 py-5
-                border border-vertex-gold
-                text-vertex-gold
-                font-display text-sm tracking-widest uppercase
-                hover:bg-vertex-gold hover:text-black
-                transition-all duration-300
-                ">
-                                        Clear Reservations
-                                    </button>
-                                </AlertDialogTrigger>
-
-                                <AlertDialogContent className="bg-vertex-black border border-white/10">
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle className="font-display">
-                                            Clear all reservations?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription className="text-white/60">
-                                            This action will permanently remove
-                                            all booking records.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>
-                                            Cancel
-                                        </AlertDialogCancel>
-
-                                        <AlertDialogAction
-                                            onClick={handleClearAll}
-                                            className="
-                    px-6 py-2
-                    border border-vertex-gold
-                    text-vertex-gold
-                    hover:bg-vertex-gold hover:text-black
-                    font-display text-sm tracking-widest uppercase
-                    transition-all duration-300
-                    ">
-                                            Confirm Clear
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
-                    </>
+                            </div>
+                        ))}
+                    </div>
                 )}
-            </section>
+
+                {/* Footer Purge Action */}
+                {bookings.length > 0 && (
+                    <div className="mt-24 flex justify-center animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-700 fill-mode-both">
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <button className="group flex items-center gap-3 text-[10px] tracking-[0.5em] uppercase text-white/20 hover:text-red-500 transition-all font-semibold">
+                                    <Trash2 className="w-4 h-4" />
+                                    Clear Records
+                                </button>
+                            </AlertDialogTrigger>
+
+                            <AlertDialogContent className="bg-[#0a0a0a] border border-white/10 rounded-sm p-10">
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle
+                                        className="text-xl font-bold text-white uppercase tracking-tight"
+                                        style={dmSansStyle}>
+                                        Confirm Purge
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription
+                                        className="text-white/40 text-sm py-4"
+                                        style={dmSansStyle}>
+                                        Are you sure you want to remove all
+                                        reservation data?
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter className="mt-8 flex gap-4">
+                                    <AlertDialogCancel
+                                        className="bg-transparent border-white/10 text-white hover:bg-white/5 hover:text-white uppercase text-[10px] tracking-widest rounded-none h-12 px-8"
+                                        style={dmSansStyle}>
+                                        Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={handleClearAll}
+                                        className="bg-vertex-gold text-black hover:bg-white transition-all uppercase text-[10px] tracking-widest font-bold rounded-none h-12 px-10"
+                                        style={dmSansStyle}>
+                                        Confirm
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
+                )}
+            </main>
         </div>
     );
 };
