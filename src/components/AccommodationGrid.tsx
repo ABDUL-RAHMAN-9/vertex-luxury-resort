@@ -62,7 +62,7 @@ const AccommodationGrid = ({ onBookRoom }: AccommodationGridProps) => {
 
     return (
         <section
-            id="hotel"
+            id="accommodation"
             className="py-24 lg:py-32 bg-vertex-black text-white relative overflow-hidden">
             <div className="container mx-auto px-6 lg:px-12">
                 {/* --- HEADER --- */}

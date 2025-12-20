@@ -34,6 +34,7 @@ const AboutSection = () => {
 
     return (
         <section
+            id="our_story"
             ref={sectionRef}
             className="py-24 lg:py-40 bg-vertex-offwhite overflow-hidden">
             <div className="container mx-auto px-6 lg:px-12">
