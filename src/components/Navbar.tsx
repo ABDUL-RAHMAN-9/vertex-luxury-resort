@@ -21,17 +21,42 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 50);
 
-            const sections = ["hotel", "dining", "wellness", "home"];
+            // If we're at the very top of the page, clear active section
+            if (window.scrollY < 100) {
+                setActiveSection("");
+                return;
+            }
+
+            const sections = [
+                "our_story",
+                "dining",
+                "wellness",
+                "accommodation",
+                "footer",
+            ];
             const currentSection = sections.find((id) => {
                 const element = document.getElementById(id);
                 if (element) {
                     const rect = element.getBoundingClientRect();
-                    return rect.top <= 100 && rect.bottom >= 100;
+                    // For footer, check if we're near the bottom of the page
+                    if (id === "footer") {
+                        return (
+                            rect.top <= 200 ||
+                            window.innerHeight + window.scrollY >=
+                                document.documentElement.scrollHeight - 100
+                        );
+                    }
+                    // Only activate if section is actually in view (top is past navbar and bottom is visible)
+                    return rect.top <= 150 && rect.bottom >= 150;
                 }
                 return false;
             });
 
-            if (currentSection) setActiveSection(currentSection);
+            if (currentSection) {
+                setActiveSection(currentSection);
+            } else {
+                setActiveSection("");
+            }
         };
 
         window.addEventListener("scroll", handleScroll);
@@ -54,10 +79,15 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
             const bodyRect = document.body.getBoundingClientRect().top;
             const elementRect = element.getBoundingClientRect().top;
             const elementPosition = elementRect - bodyRect;
-            const offsetPosition = elementPosition - offset;
+
+            // For footer, scroll to show more content
+            const offsetPosition =
+                targetId === "footer"
+                    ? elementPosition - offset + 100
+                    : elementPosition - offset;
 
             window.scrollTo({
-                top: offsetPosition,
+                top: Math.max(0, offsetPosition),
                 behavior: "smooth",
             });
         }
@@ -83,10 +113,10 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
     }, [mobileOpen]);
 
     const navLinks = [
-        { name: "The Hotel", href: "#home", id: "home" },
-        { name: "Dining", href: "#dining", id: "dining" },
+        { name: "Story", href: "#our_story", id: "our_story" },
         { name: "Wellness", href: "#wellness", id: "wellness" },
-        { name: "Reservations", action: "reservations" },
+        { name: "Dining", href: "#dining", id: "dining" },
+        { name: "Suites", href: "#accommodation", id: "accommodation" },
         { name: "Contact", href: "#footer", id: "footer" },
     ];
 
@@ -117,10 +147,11 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                             onClick={(e) =>
                                                 scrollToSection(e, link.href!)
                                             }
-                                            className="relative group overflow-hidden pb-1">
+                                            className="relative group pb-2">
+                                            {/* Link Text */}
                                             <span
                                                 className={cn(
-                                                    "font-display text-[12px] tracking-[0.25em] uppercase transition-colors duration-300 block",
+                                                    "font-display text-[12px] tracking-[0.25em] uppercase transition-colors duration-300 block relative",
                                                     isActive
                                                         ? "text-vertex-gold"
                                                         : "text-white/80 group-hover:text-white"
@@ -128,12 +159,13 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                                 {link.name}
                                             </span>
 
+                                            {/* Dot Indicator (below text, centered) */}
                                             <span
                                                 className={cn(
-                                                    "absolute bottom-0 left-0 w-full h-[1.5px] transition-transform duration-500 ease-out",
+                                                    "absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-vertex-gold transition-all duration-500 ease-out",
                                                     isActive
-                                                        ? "translate-x-0 bg-vertex-gold"
-                                                        : "bg-white -translate-x-full group-hover:translate-x-0"
+                                                        ? "scale-100 opacity-100 translate-y-0"
+                                                        : "scale-0 opacity-0 translate-y-1 group-hover:scale-100 group-hover:opacity-100 group-hover:translate-y-0"
                                                 )}
                                             />
                                         </a>
@@ -208,29 +240,48 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                 )}>
                 <div className="container mx-auto px-6 h-full flex flex-col justify-center relative z-10">
                     <div className="flex flex-col gap-6 mb-12">
-                        {navLinks.map((link, i) => (
-                            <a
-                                key={link.name}
-                                href={link.href}
-                                onClick={(e) => {
-                                    if (link.action === "reservations") {
-                                        handleViewReservations();
-                                    } else {
-                                        scrollToSection(e, link.href!);
-                                    }
-                                    setMobileOpen(false);
-                                }}
-                                className={cn(
-                                    "font-display text-4xl md:text-5xl text-white tracking-tighter hover:text-vertex-gold transition-all duration-300 transform translate-y-8 opacity-0 cursor-pointer",
-                                    mobileOpen && "translate-y-0 opacity-100"
-                                )}
-                                style={{
-                                    transitionDelay: `${100 + i * 100}ms`,
-                                    ...dmSansStyle,
-                                }}>
-                                {link.name}
-                            </a>
-                        ))}
+                        {navLinks.map((link, i) => {
+                            const isActive = activeSection === link.id;
+                            return (
+                                <a
+                                    key={link.name}
+                                    href={link.href}
+                                    onClick={(e) => {
+                                        if (
+                                            "action" in link &&
+                                            link.action === "reservations"
+                                        ) {
+                                            handleViewReservations();
+                                        } else {
+                                            scrollToSection(e, link.href!);
+                                        }
+                                        setMobileOpen(false);
+                                    }}
+                                    className={cn(
+                                        "font-display text-4xl md:text-5xl tracking-tighter transition-all duration-300 transform translate-y-8 opacity-0 cursor-pointer flex items-center gap-4",
+                                        mobileOpen &&
+                                            "translate-y-0 opacity-100",
+                                        isActive
+                                            ? "text-vertex-gold"
+                                            : "text-white hover:text-vertex-gold"
+                                    )}
+                                    style={{
+                                        transitionDelay: `${100 + i * 100}ms`,
+                                        ...dmSansStyle,
+                                    }}>
+                                    {/* Dot Indicator for Mobile */}
+                                    <span
+                                        className={cn(
+                                            "w-2 h-2 rounded-full transition-all duration-500",
+                                            isActive
+                                                ? "bg-vertex-gold scale-100 opacity-100"
+                                                : "bg-white/30 scale-75 opacity-50"
+                                        )}
+                                    />
+                                    {link.name}
+                                </a>
+                            );
+                        })}
                     </div>
 
                     <div
