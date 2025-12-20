@@ -83,7 +83,7 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
     }, [mobileOpen]);
 
     const navLinks = [
-        { name: "The Hotel", href: "#hotel", id: "hotel" },
+        { name: "The Hotel", href: "#home", id: "home" },
         { name: "Dining", href: "#dining", id: "dining" },
         { name: "Wellness", href: "#wellness", id: "wellness" },
         { name: "Reservations", action: "reservations" },
