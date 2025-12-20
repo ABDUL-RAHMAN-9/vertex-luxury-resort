@@ -2,17 +2,21 @@ import { useState, useEffect, useCallback } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { EmblaCarouselType } from "embla-carousel";
 import {
-    ArrowRight,
     ChevronLeft,
     ChevronRight,
     UtensilsCrossed,
+    Sparkles,
 } from "lucide-react";
 
 // Images
-import cocktail from "@/assets/cocktail.jpg";
-import gourmetDish from "@/assets/gourmet-dish.jpg";
-import winePour from "@/assets/wine-pour.jpg";
-import pastry from "@/assets/pastry.jpg";
+import img1 from "@/assets/img1.png";
+import img2 from "@/assets/img2.png";
+import img3 from "@/assets/img3.png";
+import img4 from "@/assets/img4.png";
+import img5 from "@/assets/img5.png";
+import img6 from "@/assets/img6.jpg";
+import img7 from "@/assets/img7.jpg";
+import img8 from "@/assets/img8.png";
 
 // Logic
 import { generateMenuPDF } from "@/lib/generateMenuPDF";
@@ -21,34 +25,52 @@ import NotificationToast from "./ui/NotificationToast";
 // Data
 const items = [
     {
-        src: cocktail,
-        alt: "The Obsidian",
-        category: "Signature Cocktail",
-        price: "$24",
+        src: img1,
+        alt: "Black Truffle & Wagyu Experience",
+        category: "Signature Tasting Menu",
+        price: "$680",
     },
     {
-        src: gourmetDish,
-        alt: "Wagyu A5 Tartare",
-        category: "Main Course",
-        price: "$120",
+        src: img2,
+        alt: "Imperial Caviar Degustation",
+        category: "Luxury Appetizer",
+        price: "$420",
     },
     {
-        src: winePour,
-        alt: "Château Margaux",
-        category: "Vintage Selection",
+        src: img3,
+        alt: "Dom Pérignon Vintage Collection",
+        category: "Premium Champagne",
+        price: "$550",
+    },
+    {
+        src: img4,
+        alt: "Kobe Beef Tenderloin",
+        category: "Premium Main Course",
+        price: "$320",
+    },
+    {
+        src: img5,
+        alt: "Lobster Thermidor Royale",
+        category: "Executive Chef Special",
+        price: "$280",
+    },
+    {
+        src: img6,
+        alt: "Golden Osetra Caviar Service",
+        category: "Luxury Selection",
         price: "$450",
     },
     {
-        src: pastry,
-        alt: "Gold Leaf Éclair",
-        category: "Patisserie",
-        price: "$18",
+        src: img7,
+        alt: "Château Lafite Rothschild",
+        category: "Vintage Reserve",
+        price: "$720",
     },
     {
-        src: cocktail,
-        alt: "Velvet Martini",
-        category: "Lounge Bar",
-        price: "$22",
+        src: img8,
+        alt: "Oregon Coastal Carbonara",
+        category: "Chef's Table Exclusive",
+        price: "$390",
     },
 ];
 
@@ -198,10 +220,10 @@ const DiningGallery = ({ onBookTable }: DiningGalleryProps) => {
                                             </div>
 
                                             <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">
+                                                <Sparkles className="w-4 h-4 text-vertex-gold" />
                                                 <span className="text-xs tracking-widest uppercase">
-                                                    View Details
+                                                    Chef's Selection
                                                 </span>
-                                                <ArrowRight className="w-4 h-4 text-vertex-gold" />
                                             </div>
                                         </div>
                                     </div>
