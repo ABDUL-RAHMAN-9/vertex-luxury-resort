@@ -164,17 +164,17 @@ const DiningGallery = ({ onBookTable }: DiningGalleryProps) => {
                     <div className="hidden lg:flex gap-4 items-center">
                         <button
                             onClick={scrollPrev}
-                            className="w-12 h-12 flex items-center justify-center border border-gray-200 rounded-full hover:bg-black hover:text-white transition-all duration-300 group">
+                            className="w-12 h-12 flex items-center justify-center border border-gray-200 rounded-full hover:bg-black bg-clip-padding hover:text-white transition-all duration-300 group">
                             <ChevronLeft
-                                size={20}
+                                size={26}
                                 className="group-hover:-translate-x-1 transition-transform"
                             />
                         </button>
                         <button
                             onClick={scrollNext}
-                            className="w-12 h-12 flex items-center justify-center border border-gray-200 rounded-full hover:bg-black hover:text-white transition-all duration-300 group">
+                            className="w-12 h-12 flex items-center justify-center border border-gray-200 rounded-full hover:bg-black bg-clip-padding hover:text-white transition-all duration-300 group">
                             <ChevronRight
-                                size={20}
+                                size={26}
                                 className="group-hover:translate-x-1 transition-transform"
                             />
                         </button>
