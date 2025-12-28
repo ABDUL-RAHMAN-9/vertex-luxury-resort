@@ -12,7 +12,7 @@ const useReveal = (threshold = 0.1) => {
             ([entry]) => {
                 if (entry.isIntersecting) {
                     setIsVisible(true);
-                    observer.disconnect(); // Trigger once
+                    observer.disconnect();
                 }
             },
             { threshold }
@@ -52,24 +52,30 @@ const RevealText = ({
 
 const OurStory = () => {
     const navigate = useNavigate();
+    const [isScrolled, setIsScrolled] = useState(false);
+    const [scrollProgress, setScrollProgress] = useState(0);
 
-    // --- FIX: SCROLL TO TOP ON MOUNT ---
-    // This ensures the page always starts at the very top
+    // --- SCROLL LOGIC ---
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
 
-    // Scroll progress logic
-    const [scrollProgress, setScrollProgress] = useState(0);
-    useEffect(() => {
         const handleScroll = () => {
+            // Update scroll progress bar
             const totalScroll = document.documentElement.scrollTop;
             const windowHeight =
                 document.documentElement.scrollHeight -
                 document.documentElement.clientHeight;
-            const scroll = `${totalScroll / windowHeight}`;
-            setScrollProgress(Number(scroll));
+            const scroll = totalScroll / windowHeight;
+            setScrollProgress(scroll);
+
+            // Update Navbar state (trigger after 50px of scrolling)
+            if (window.scrollY > 50) {
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
         };
+
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
@@ -85,31 +91,56 @@ const OurStory = () => {
     return (
         <div className="bg-[#050505] min-h-screen text-[#Eaeaea] font-sans selection:bg-vertex-gold selection:text-black">
             {/* --- PROGRESS BAR (Left Side) --- */}
-            <div className="fixed left-0 top-0 h-full w-[2px] bg-white/5 z-50 hidden lg:block">
+            <div className="fixed left-0 top-0 h-full w-[2px] bg-white/5 z-[60] hidden lg:block">
                 <div
                     className="w-full bg-vertex-gold transition-all duration-100 ease-out"
                     style={{ height: `${scrollProgress * 100}%` }}
                 />
             </div>
 
-            {/* --- NAVIGATION --- */}
+            {/* --- REFINED GLASSY NAVIGATION --- */}
             <nav
-                className="fixed top-0 left-0 w-full p-6 z-50 mix-blend-difference flex justify-between items-center animate-fade-in opacity-0"
-                style={{ animationFillMode: "forwards" }}>
-                <Link
-                    to="/"
-                    className="group flex items-center gap-2 text-sm font-display tracking-widest uppercase hover:text-vertex-gold transition-colors text-white">
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    Back to Home
-                </Link>
-                <div className="font-display font-bold text-xl tracking-widest text-white">
-                    VERTEX
+                className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ease-in-out ${
+                    isScrolled
+                        ? "py-4 bg-[#050505]/70 backdrop-blur-md border-b border-white/10"
+                        : "py-8 bg-transparent"
+                }`}>
+                <div className="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-24 flex justify-between items-center">
+                    <Link
+                        to="/"
+                        className={`group flex items-center gap-2 text-xs md:text-sm font-display tracking-widest uppercase transition-all duration-300 ${
+                            isScrolled
+                                ? "text-white"
+                                : "text-white mix-blend-difference"
+                        } hover:text-vertex-gold`}>
+                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                        <span className="hidden sm:inline">Back to Home</span>
+                    </Link>
+
+                    <div
+                        className={`font-display font-bold text-xl md:text-2xl tracking-[0.3em] transition-all duration-300 ${
+                            isScrolled
+                                ? "text-white"
+                                : "text-white mix-blend-difference"
+                        }`}>
+                        VERTEX
+                    </div>
+
+                    {/* Simple CTA that appears on scroll for better UX */}
+                    <button
+                        onClick={handleStartJourney}
+                        className={`text-[10px] tracking-[0.2em] uppercase border border-vertex-gold/50 px-4 py-2 transition-all duration-500 hover:bg-vertex-gold hover:text-black ${
+                            isScrolled
+                                ? "opacity-100 translate-y-0"
+                                : "opacity-0 -translate-y-4 pointer-events-none"
+                        }`}>
+                        Book Now
+                    </button>
                 </div>
             </nav>
 
             {/* --- HERO SECTION --- */}
             <header className="relative h-screen flex flex-col justify-center px-6 md:px-24 overflow-hidden border-b border-white/5">
-                {/* Background Video/Image Placeholder */}
                 <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent z-10" />
                     <img
@@ -128,7 +159,7 @@ const OurStory = () => {
                     </div>
 
                     <h1
-                        className="font-display text-7xl md:text-9xl lg:text-[11rem] leading-[0.85] tracking-tighter text-white mix-blend-overlay opacity-0 animate-fade-up"
+                        className="font-display text-6xl md:text-9xl lg:text-[11rem] leading-[0.85] tracking-tighter text-white mix-blend-overlay opacity-0 animate-fade-up"
                         style={{
                             animationDelay: "200ms",
                             animationFillMode: "forwards",
@@ -148,11 +179,10 @@ const OurStory = () => {
                 </div>
             </header>
 
-            {/* --- SECTION 1: THE MANIFESTO (Sticky Layout) --- */}
+            {/* --- SECTION 1: THE MANIFESTO --- */}
             <section className="relative py-32 border-b border-white/5">
                 <div className="container mx-auto px-6 md:px-24">
                     <div className="flex flex-col lg:flex-row gap-20">
-                        {/* Sticky Header */}
                         <div className="lg:w-1/3">
                             <div className="sticky top-32">
                                 <RevealText>
@@ -169,7 +199,6 @@ const OurStory = () => {
                             </div>
                         </div>
 
-                        {/* Scrolling Content */}
                         <div className="lg:w-2/3 space-y-32">
                             <RevealText>
                                 <p className="text-2xl md:text-4xl font-light leading-tight text-white/90">
@@ -211,7 +240,7 @@ const OurStory = () => {
                 </div>
             </section>
 
-            {/* --- SECTION 2: ARCHITECTURAL DETAILS (Grid) --- */}
+            {/* --- SECTION 2: ARCHITECTURAL DETAILS --- */}
             <section className="py-32 bg-[#080808]">
                 <div className="container mx-auto px-6 md:px-24">
                     <RevealText className="mb-16 flex items-end justify-between">
@@ -221,7 +250,6 @@ const OurStory = () => {
                         </span>
                     </RevealText>
 
-                    {/* Architectural Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 border-t border-l border-white/10">
                         {[
                             {
@@ -269,7 +297,7 @@ const OurStory = () => {
 
             {/* --- SECTION 3: VISUAL BREAK --- */}
             <section className="h-[80vh] relative flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-vertex-black/20 z-10" />
+                <div className="absolute inset-0 bg-black/20 z-10" />
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center bg-fixed grayscale hover:grayscale-0 transition-all duration-[2s]" />
                 <div className="relative z-20 text-center mix-blend-difference">
                     <p className="font-serif italic text-3xl md:text-5xl text-white tracking-wide">
@@ -278,7 +306,7 @@ const OurStory = () => {
                 </div>
             </section>
 
-            {/* --- FOOTER CTA (Original Style) --- */}
+            {/* --- FOOTER CTA --- */}
             <section className="py-32 text-center reveal-section bg-[#050505] relative border-t border-white/10">
                 <RevealText>
                     <h2 className="font-display text-5xl md:text-8xl mb-8 tracking-tighter text-white/90">
