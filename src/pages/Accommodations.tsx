@@ -310,26 +310,103 @@ const Accommodations = ({ onBookRoom }: AccommodationsProps) => {
                 </div>
             </section>
 
-            {/* --- CTA FOOTER --- */}
-            <section className="relative h-[80vh] flex items-center justify-center overflow-hidden bg-black">
-                <div className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=2057&auto=format&fit=crop')] bg-cover bg-center opacity-30 grayscale contrast-125" />
-                <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-transparent to-black" />
-                <div className="relative z-20 text-center px-6">
-                    <h2 className="font-display text-5xl md:text-8xl lg:text-9xl text-white tracking-tighter mb-12">
-                        CLAIM YOUR <br />{" "}
-                        <span className="text-white/80 italic font-serif">
-                            Sanctuary.
-                        </span>
-                    </h2>
-                    <button
-                        onClick={onBookRoom}
-                        className="group relative inline-flex items-center gap-4 px-12 py-6 bg-white text-black overflow-hidden transition-all duration-500 hover:bg-vertex-gold hover:scale-105">
-                        <span className="relative z-10 font-display font-bold tracking-widest text-sm uppercase">
-                            Check Availability
-                        </span>
-                        <ArrowRight className="relative z-10 w-4 h-4 transition-transform group-hover:translate-x-2" />
-                        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
-                    </button>
+            {/* --- REDESIGNED CTA FOOTER --- */}
+            <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#050505]">
+                {/* 1. Enhanced Background with Slow Zoom */}
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505] z-10" />
+                    <div className="absolute inset-0 bg-black/40 z-10" />
+                    <img
+                        src="https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=2057&auto=format&fit=crop"
+                        className="w-full h-full object-cover grayscale opacity-40 animate-slow-zoom"
+                        alt="Sanctuary"
+                    />
+                </div>
+
+                {/* 2. Architectural Decorative Elements (The "Vertex" Lines) */}
+                <div className="absolute inset-0 z-10 pointer-events-none">
+                    <div className="absolute top-1/2 left-10 w-[1px] h-32 bg-vertex-gold/30 -translate-y-1/2 hidden lg:block" />
+                    <div className="absolute top-1/2 right-10 w-[1px] h-32 bg-vertex-gold/30 -translate-y-1/2 hidden lg:block" />
+                </div>
+
+                {/* 3. Content Container */}
+                <div className="relative z-20 container mx-auto px-6 text-center">
+                    <div className="max-w-4xl mx-auto space-y-12">
+                        {/* Top Label with Line */}
+                        <div className="flex flex-col items-center gap-4 animate-fade-in">
+                            <span className="text-vertex-gold text-xs font-bold tracking-[0.5em] uppercase">
+                                The Final Chapter
+                            </span>
+                            <div className="w-px h-12 bg-gradient-to-b from-vertex-gold to-transparent" />
+                        </div>
+
+                        {/* Main Title with Staggered Feel */}
+                        <div className="space-y-4">
+                            <h2 className="font-display text-6xl md:text-8xl lg:text-[10rem] text-white leading-[0.8] tracking-tighter">
+                                CLAIM YOUR <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 italic font-serif tracking-normal">
+                                    Sanctuary.
+                                </span>
+                            </h2>
+
+                            <p className="text-white/50 font-light text-lg md:text-xl max-w-xl mx-auto leading-relaxed mt-8">
+                                A masterclass in restoration. From the silence
+                                of our sound-isolated suites to the bespoke
+                                service of our private chefs. The night is
+                                yours.
+                            </p>
+                        </div>
+
+                        {/* Redesigned Premium Button */}
+                        <div className="pt-8">
+                            <button
+                                onClick={onBookRoom}
+                                className="group relative inline-flex flex-col items-center gap-4">
+                                {/* The Button Body */}
+                                <div className="relative px-16 py-6 border border-white/20 overflow-hidden transition-all duration-500 group-hover:border-vertex-gold bg-clip-padding">
+                                    {/* Hover Fill Effect */}
+                                    <div className="absolute inset-0 bg-vertex-gold translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+
+                                    {/* Text Content */}
+                                    <div className="relative z-10 flex items-center gap-3">
+                                        <span className="font-display font-bold tracking-[0.3em] text-sm uppercase text-white group-hover:text-black transition-colors duration-500">
+                                            Check Availability
+                                        </span>
+                                        <ArrowRight className="w-4 h-4 text-vertex-gold group-hover:text-black transition-all duration-500 group-hover:translate-x-1" />
+                                    </div>
+                                </div>
+
+                                {/* Meta Info under button */}
+                                <div className="flex items-center gap-8 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-4 group-hover:translate-y-0">
+                                    <span className="text-[10px] text-vertex-gold tracking-widest uppercase font-bold">
+                                        Limited Seasonal Suites
+                                    </span>
+                                    <div className="w-1 h-1 rounded-full bg-vertex-gold" />
+                                    <span className="text-[10px] text-vertex-gold tracking-widest uppercase font-bold">
+                                        Priority Check-In
+                                    </span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 4. Bottom Corner Stats/Details (Adds "Realism") */}
+                <div className="absolute bottom-12 left-12 hidden lg:block text-left border-l border-white/10 pl-6">
+                    <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] mb-1">
+                        Elevation
+                    </p>
+                    <p className="text-sm font-mono text-white/60">
+                        1,240m Above Sea
+                    </p>
+                </div>
+                <div className="absolute bottom-12 right-12 hidden lg:block text-right border-r border-white/10 pr-6">
+                    <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] mb-1">
+                        Coordinates
+                    </p>
+                    <p className="text-sm font-mono text-white/60">
+                        45.4215° N, 75.6972° W
+                    </p>
                 </div>
             </section>
         </div>
