@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { Instagram, Twitter, Menu, X, Calendar, Phone } from "lucide-react";
+import {
+    Instagram,
+    Twitter,
+    Menu,
+    X,
+    Calendar,
+    Phone,
+    BookmarkCheck,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
@@ -16,12 +24,9 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // 1. --- SCROLL & ACTIVE SECTION DETECTION ---
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 50);
-
-            // If we're at the very top of the page, clear active section
             if (window.scrollY < 100) {
                 setActiveSection("");
                 return;
@@ -38,32 +43,17 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                 const element = document.getElementById(id);
                 if (element) {
                     const rect = element.getBoundingClientRect();
-                    // For footer, check if we're near the bottom of the page
-                    if (id === "footer") {
-                        return (
-                            rect.top <= 200 ||
-                            window.innerHeight + window.scrollY >=
-                                document.documentElement.scrollHeight - 100
-                        );
-                    }
-                    // Only activate if section is actually in view (top is past navbar and bottom is visible)
                     return rect.top <= 150 && rect.bottom >= 150;
                 }
                 return false;
             });
-
-            if (currentSection) {
-                setActiveSection(currentSection);
-            } else {
-                setActiveSection("");
-            }
+            if (currentSection) setActiveSection(currentSection);
         };
 
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    // 2. --- SMOOTH SCROLL HANDLER (FOR SECTIONS) ---
     const scrollToSection = (e: React.MouseEvent, href: string) => {
         e.preventDefault();
         const targetId = href.replace("#", "");
@@ -75,37 +65,18 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
 
         const element = document.getElementById(targetId);
         if (element) {
-            const offset = 80;
-            const bodyRect = document.body.getBoundingClientRect().top;
-            const elementRect = element.getBoundingClientRect().top;
-            const elementPosition = elementRect - bodyRect;
-
-            // For footer, scroll to show more content
-            const offsetPosition =
-                targetId === "footer"
-                    ? elementPosition - offset + 100
-                    : elementPosition - offset;
-
             window.scrollTo({
-                top: Math.max(0, offsetPosition),
+                top: element.offsetTop - 80,
                 behavior: "smooth",
             });
         }
         setMobileOpen(false);
     };
 
-    // 3. --- VIEW RESERVATIONS (FIXED SCROLL-TO-TOP BUG) ---
     const handleViewReservations = () => {
+        setMobileOpen(false);
         navigate("/my-reservations");
-
-        // Timeout ensures the scroll happens after the new page starts mounting
-        setTimeout(() => {
-            window.scrollTo({
-                top: 0,
-                left: 0,
-                behavior: "smooth",
-            });
-        }, 100);
+        setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
     };
 
     useEffect(() => {
@@ -127,105 +98,101 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
             <nav
                 style={dmSansStyle}
                 className={cn(
-                    "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b border-transparent",
+                    "fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b",
                     scrolled
-                        ? "bg-black/80 backdrop-blur-md py-5 border-white/10"
-                        : "bg-transparent py-6"
+                        ? "bg-black/90 backdrop-blur-md py-4 border-white/10"
+                        : "bg-transparent py-6 border-transparent"
                 )}>
                 <div className="container mx-auto px-6 lg:px-12">
                     <div className="flex items-center justify-between">
-                        {/* --- LEFT: Navigation Links --- */}
+                        {/* --- LEFT: Desktop Links --- */}
                         <div className="hidden lg:flex items-center gap-8">
-                            {navLinks
-                                .filter((link) => link.name !== "Reservations")
-                                .map((link) => {
-                                    const isActive = activeSection === link.id;
-                                    return (
-                                        <a
-                                            key={link.name}
-                                            href={link.href}
-                                            onClick={(e) =>
-                                                scrollToSection(e, link.href!)
-                                            }
-                                            className="relative group pb-2">
-                                            {/* Link Text */}
-                                            <span
-                                                className={cn(
-                                                    "font-display text-[12px] tracking-[0.25em] uppercase transition-colors duration-300 block relative",
-                                                    isActive
-                                                        ? "text-vertex-gold"
-                                                        : "text-white/80 group-hover:text-white"
-                                                )}>
-                                                {link.name}
-                                            </span>
-
-                                            {/* Dot Indicator (below text, centered) */}
-                                            <span
-                                                className={cn(
-                                                    "absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-vertex-gold transition-all duration-500 ease-out",
-                                                    isActive
-                                                        ? "scale-100 opacity-100 translate-y-0"
-                                                        : "scale-0 opacity-0 translate-y-1 group-hover:scale-100 group-hover:opacity-100 group-hover:translate-y-0"
-                                                )}
-                                            />
-                                        </a>
-                                    );
-                                })}
+                            {navLinks.map((link) => (
+                                <a
+                                    key={link.name}
+                                    href={link.href}
+                                    onClick={(e) =>
+                                        scrollToSection(e, link.href)
+                                    }
+                                    className="relative group pb-1">
+                                    <span
+                                        className={cn(
+                                            "font-display text-[11px] tracking-[0.25em] uppercase transition-colors duration-300",
+                                            activeSection === link.id
+                                                ? "text-vertex-gold"
+                                                : "text-white/70 group-hover:text-white"
+                                        )}>
+                                        {link.name}
+                                    </span>
+                                    <span
+                                        className={cn(
+                                            "absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-vertex-gold transition-all duration-300",
+                                            activeSection === link.id
+                                                ? "opacity-100"
+                                                : "opacity-0 scale-0 group-hover:scale-100 group-hover:opacity-100"
+                                        )}
+                                    />
+                                </a>
+                            ))}
                         </div>
 
                         {/* --- CENTER: Logo --- */}
-                        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center group cursor-pointer">
+                        <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
                             <Link
                                 to="/"
-                                onClick={(e) => scrollToSection(e, "#home")}
-                                className="text-center">
+                                onClick={(e) => scrollToSection(e, "#home")}>
                                 <h1
                                     className={cn(
-                                        "font-display text-2xl md:text-2xl font-bold tracking-[0.4em] transition-all duration-500",
-                                        scrolled
-                                            ? "text-white scale-90"
-                                            : "text-white"
+                                        "font-display text-xl md:text-2xl font-bold tracking-[0.4em] text-white transition-all",
+                                        scrolled && "scale-90"
                                     )}>
                                     VERTEX
                                 </h1>
-                                <div
-                                    className={cn(
-                                        "h-[1.5px] bg-vertex-gold transition-all duration-500 mx-auto",
-                                        scrolled
-                                            ? "w-0 opacity-0"
-                                            : "w-12 opacity-100 mt-1"
-                                    )}
-                                />
+                                {!scrolled && (
+                                    <div className="h-[1px] w-8 bg-vertex-gold mx-auto mt-1" />
+                                )}
                             </Link>
                         </div>
 
-                        {/* --- RIGHT: Actions --- */}
-                        <div className="hidden lg:flex items-center gap-6">
-                            <div className="flex items-center gap-4 border-r border-white/10 pr-6">
+                        {/* --- RIGHT: Desktop Actions & Mobile Quick Access --- */}
+                        <div className="flex items-center gap-4 md:gap-6">
+                            {/* Desktop Socials */}
+                            <div className="hidden lg:flex items-center gap-4 border-r border-white/10 pr-6">
                                 {[Instagram, Twitter].map((Icon, i) => (
                                     <a
                                         key={i}
                                         href="#"
-                                        className="text-white/50 hover:text-vertex-gold transition-colors duration-300">
-                                        <Icon size={18} />
+                                        className="text-white/40 hover:text-vertex-gold transition-colors">
+                                        <Icon size={16} />
                                     </a>
                                 ))}
                             </div>
 
+                            {/* Reservations Button (Desktop) / Icon (Mobile) */}
                             <button
                                 onClick={handleViewReservations}
-                                className="flex items-center justify-center gap-3 px-6 py-2 border border-white/20 text-white font-display text-[12px] tracking-widest uppercase hover:border-vertex-gold hover:bg-vertex-gold hover:text-black transition-all duration-500">
-                                <Calendar className="w-3.5 h-3.5" />
-                                Reservations
+                                className={cn(
+                                    "flex items-center gap-2 transition-all duration-300",
+                                    "lg:px-6 lg:py-2 lg:border lg:border-white/20 lg:text-[11px] lg:tracking-widest lg:uppercase lg:hover:border-vertex-gold lg:hover:bg-vertex-gold lg:hover:text-black",
+                                    "text-white/70 hover:text-vertex-gold" // Mobile Style
+                                )}>
+                                <Calendar className="w-5 h-5 lg:w-3.5 lg:h-3.5" />
+                                <span className="hidden lg:block">
+                                    Reservations
+                                </span>
+                            </button>
+
+                            {/* Mobile Hamburger */}
+                            <button
+                                className="lg:hidden text-white transition-transform active:scale-90"
+                                onClick={() => setMobileOpen(!mobileOpen)}>
+                                {mobileOpen ? (
+                                    <X size={24} />
+                                ) : (
+                                    <Menu size={24} />
+                                )}
                             </button>
                         </div>
-
-                        {/* --- MOBILE: Hamburger --- */}
-                        <button
-                            className="lg:hidden text-white z-50 relative"
-                            onClick={() => setMobileOpen(!mobileOpen)}>
-                            {mobileOpen ? <X size={26} /> : <Menu size={26} />}
-                        </button>
                     </div>
                 </div>
             </nav>
@@ -233,71 +200,66 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
             {/* --- MOBILE MENU OVERLAY --- */}
             <div
                 className={cn(
-                    "fixed inset-0 z-40 bg-[#0a0a0a] transition-all duration-700 ease-[cubic-bezier(0.87,0,0.13,1)]",
-                    mobileOpen
-                        ? "translate-y-0 opacity-100"
-                        : "-translate-y-full opacity-0"
+                    "fixed inset-0 z-40 bg-[#050505] transition-all duration-700 ease-[cubic-bezier(0.85,0,0.15,1)]",
+                    mobileOpen ? "translate-y-0" : "-translate-y-full"
                 )}>
-                <div className="container mx-auto px-6 h-full flex flex-col justify-center relative z-10">
-                    <div className="flex flex-col gap-6 mb-12">
-                        {navLinks.map((link, i) => {
-                            const isActive = activeSection === link.id;
-                            return (
-                                <a
-                                    key={link.name}
-                                    href={link.href}
-                                    onClick={(e) => {
-                                        if (
-                                            "action" in link &&
-                                            link.action === "reservations"
-                                        ) {
-                                            handleViewReservations();
-                                        } else {
-                                            scrollToSection(e, link.href!);
-                                        }
-                                        setMobileOpen(false);
-                                    }}
-                                    className={cn(
-                                        "font-display text-4xl md:text-5xl tracking-tighter transition-all duration-300 transform translate-y-8 opacity-0 cursor-pointer flex items-center gap-4",
-                                        mobileOpen &&
-                                            "translate-y-0 opacity-100",
-                                        isActive
-                                            ? "text-vertex-gold"
-                                            : "text-white hover:text-vertex-gold"
-                                    )}
-                                    style={{
-                                        transitionDelay: `${100 + i * 100}ms`,
-                                        ...dmSansStyle,
-                                    }}>
-                                    {/* Dot Indicator for Mobile */}
-                                    <span
-                                        className={cn(
-                                            "w-2 h-2 rounded-full transition-all duration-500",
-                                            isActive
-                                                ? "bg-vertex-gold scale-100 opacity-100"
-                                                : "bg-white/30 scale-75 opacity-50"
-                                        )}
-                                    />
-                                    {link.name}
-                                </a>
-                            );
-                        })}
+                <div className="container mx-auto px-8 h-full flex flex-col justify-center">
+                    {/* Navigation Links */}
+                    <div className="flex flex-col gap-6 mb-16">
+                        {navLinks.map((link, i) => (
+                            <a
+                                key={link.name}
+                                href={link.href}
+                                onClick={(e) => scrollToSection(e, link.href)}
+                                className={cn(
+                                    "font-display text-4xl tracking-tighter transition-all duration-700 delay-[100ms]",
+                                    mobileOpen
+                                        ? "translate-y-0 opacity-100"
+                                        : "translate-y-10 opacity-0",
+                                    activeSection === link.id
+                                        ? "text-vertex-gold"
+                                        : "text-white"
+                                )}
+                                style={{
+                                    transitionDelay: `${i * 70}ms`,
+                                    ...dmSansStyle,
+                                }}>
+                                {link.name}
+                            </a>
+                        ))}
+
+                        {/* Explicit Reservations Link for Mobile */}
+                        <button
+                            onClick={handleViewReservations}
+                            className={cn(
+                                "font-display text-4xl tracking-tighter text-left flex items-center gap-4 text-vertex-gold transition-all duration-700 delay-[400ms]",
+                                mobileOpen
+                                    ? "translate-y-0 opacity-100"
+                                    : "translate-y-10 opacity-0"
+                            )}
+                            style={{ ...dmSansStyle }}>
+                            <BookmarkCheck className="w-8 h-8" />
+                            My Bookings
+                        </button>
                     </div>
 
+                    {/* Booking Quick Actions Grid */}
                     <div
                         className={cn(
-                            "grid grid-cols-2 gap-4 transform translate-y-8 opacity-0 transition-all duration-700 delay-500",
-                            mobileOpen && "translate-y-0 opacity-100"
+                            "grid grid-cols-2 gap-4 transition-all duration-1000 delay-500",
+                            mobileOpen
+                                ? "translate-y-0 opacity-100"
+                                : "translate-y-20 opacity-0"
                         )}>
                         <button
                             onClick={() => {
                                 onBookRoom();
                                 setMobileOpen(false);
                             }}
-                            className="p-8 border border-white/5 bg-white/[0.02] flex flex-col items-center gap-3 hover:bg-white/5 transition-colors">
-                            <Calendar className="w-6 h-6 text-vertex-gold" />
+                            className="p-6 border border-white/5 bg-white/[0.03] flex flex-col items-center gap-3 active:bg-white/10">
+                            <Calendar className="w-5 h-5 text-vertex-gold" />
                             <span
-                                className="text-[10px] tracking-widest text-white uppercase"
+                                className="text-[9px] tracking-[0.2em] text-white uppercase font-bold"
                                 style={dmSansStyle}>
                                 Book Suite
                             </span>
@@ -307,10 +269,10 @@ const Navbar = ({ onBookRoom, onBookTable }: NavbarProps) => {
                                 onBookTable();
                                 setMobileOpen(false);
                             }}
-                            className="p-8 border border-white/5 bg-white/[0.02] flex flex-col items-center gap-3 hover:bg-white/5 transition-colors">
-                            <Phone className="w-6 h-6 text-vertex-gold" />
+                            className="p-6 border border-white/5 bg-white/[0.03] flex flex-col items-center gap-3 active:bg-white/10">
+                            <Phone className="w-5 h-5 text-vertex-gold" />
                             <span
-                                className="text-[10px] tracking-widest text-white uppercase"
+                                className="text-[9px] tracking-[0.2em] text-white uppercase font-bold"
                                 style={dmSansStyle}>
                                 Book Table
                             </span>
